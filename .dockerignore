@@ -1,0 +1,20 @@
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Data files
+/data
+
+# Dev stuff
+.git
+.gitignore
+LICENSE
+README.md
+deploy_rsa.enc
+.travis.yml
+.vscode

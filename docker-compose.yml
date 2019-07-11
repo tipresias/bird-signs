@@ -1,0 +1,11 @@
+version: "3.2"
+services:
+  afl_data:
+    build: ./afl_data
+    volumes:
+      - ./afl_data:/app/afl_data
+    ports:
+      - "8080:8080"
+    stdin_open: true
+    tty: true
+    command: Rscript app.R

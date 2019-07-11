@@ -1,0 +1,15 @@
+sudo: required
+services:
+  - docker
+before_script:
+  - docker pull cfranklin11/tipresias_afl_data:latest
+
+  - docker build --cache-from cfranklin11/tipresias_afl_data:latest -t cfranklin11/tipresias_afl_data:latest -f ./afl_data/ci.Dockerfile ./afl_data
+script:
+  - docker run cfranklin11/tipresias_afl_data:latest Rscript -e "devtools::test()"
+
+deploy:
+  provider: script
+  script: bash ./scripts/deploy.sh
+  on:
+    branch: master
