@@ -21,9 +21,14 @@ The AFL data API for the Tipresias app and related data-science services
 
 ### Testing
 
-- `docker-compose run --rm afl_data Rscript -e "devtools::test()"`
+- `docker-compose run --rm app Rscript -e "devtools::test()"`
 
 ### Deploy
 
-  - `gcloud builds submit --config cloudbuild.yaml ./afl_data`
-  - `gcloud beta run deploy $SERVICE_NAME --image gcr.io/$PROJECT_ID/afl_data --memory 2Gi`
+- Deploy app to Google Cloud:
+
+  - Merge a pull request into `master`
+  - Manually trigger a deploy:
+    - In the Travis dashboard, navigate to the tipresias repository.
+    - Under 'More Options', trigger a build on `master`.
+    - This will build the image, run tests, and deploy to Google Cloud.
