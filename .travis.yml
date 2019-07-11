@@ -1,10 +1,10 @@
 sudo: required
+# Cache Gcloud SDK between commands
+cache:
+  directories:
+    - "$HOME/google-cloud-sdk/"
 services:
   - docker
-before_install:
-  - mkdir .gcloud
-  - openssl aes-256-cbc -K $encrypted_b3ce34c885bd_key -iv $encrypted_b3ce34c885bd_iv -in keyfile.json.enc -out ./.gcloud/keyfile.json -d
-  - ls .gcloud/
 before_script:
   - docker pull cfranklin11/tipresias_afl_data:latest
   - docker build --cache-from cfranklin11/tipresias_afl_data:latest -t cfranklin11/tipresias_afl_data:latest -f ./afl_data/ci.Dockerfile ./afl_data
@@ -13,6 +13,8 @@ script:
 before_deploy:
   - echo "$DOCKER_PASSWORD" | docker login -u cfranklin11 --password-stdin
   - docker push cfranklin11/tipresias_afl_data:latest
+  - mkdir $HOME/.gcloud
+  - openssl aes-256-cbc -K $encrypted_b3ce34c885bd_key -iv $encrypted_b3ce34c885bd_iv -in keyfile.json.enc -out $HOME/.gcloud/keyfile.json -d
   - if [ ! -d "$HOME/google-cloud-sdk/bin" ]; then rm -rf $HOME/google-cloud-sdk; export CLOUDSDK_CORE_DISABLE_PROMPTS=1; curl https://sdk.cloud.google.com | bash; fi
   - source /home/travis/google-cloud-sdk/path.bash.inc
   - gcloud --quiet version
