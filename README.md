@@ -21,7 +21,7 @@ The AFL data API for the Tipresias app and related data-science services
 
 ### Testing
 
-- `docker-compose run --rm app Rscript -e "devtools::test()"`
+- Run `./scripts/test.sh`
 
 ### Deploy
 
