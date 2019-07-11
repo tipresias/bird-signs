@@ -1,6 +1,6 @@
 version: "3.2"
 services:
-  afl_data:
+  app:
     build: ./afl_data
     volumes:
       - ./afl_data:/app/afl_data
