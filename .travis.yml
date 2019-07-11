@@ -20,6 +20,7 @@ before_deploy:
   - gcloud --quiet version
   - gcloud --quiet components install beta
   - gcloud --quiet components update
+  - gcloud auth activate-service-account --key-file ${HOME}/.gcloud/keyfile.json
 deploy:
   provider: script
   script: bash ./scripts/deploy.sh
