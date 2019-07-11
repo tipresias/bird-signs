@@ -1,3 +1,4 @@
+ls .gcloud
 gcloud auth activate-service-account --key-file ./.gcloud/keyfile.json
 
 gcloud builds submit --config cloudbuild.yaml ./afl_data

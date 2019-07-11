@@ -4,6 +4,7 @@ services:
 before_install:
   - mkdir .gcloud
   - openssl aes-256-cbc -K $encrypted_b3ce34c885bd_key -iv $encrypted_b3ce34c885bd_iv -in keyfile.json.enc -out ./.gcloud/keyfile.json -d
+  - ls .gcloud/
 before_script:
   - docker pull cfranklin11/tipresias_afl_data:latest
   - docker build --cache-from cfranklin11/tipresias_afl_data:latest -t cfranklin11/tipresias_afl_data:latest -f ./afl_data/ci.Dockerfile ./afl_data
