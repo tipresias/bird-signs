@@ -5,7 +5,20 @@ source(paste0(getwd(), "/R/fixtures.R"))
 source(paste0(getwd(), "/R/rosters.R"))
 
 FIRST_AFL_SEASON = "1897-01-01"
-END_OF_YEAR = paste0(lubridate::year(Sys.Date()), "12-31")
+END_OF_YEAR = paste0(lubridate::year(Sys.Date()), "-12-31")
+
+#* @filter checkAuth
+function(req, res){
+  if (
+    tolower(Sys.getenv("R_ENV")) == "production" &&
+    req$HTTP_AUTHORIZATION != paste0("Bearer ", Sys.getenv("GCR_TOKEN"))
+  ){
+    res$status <- 401
+    return(list(error="Not authorized"))
+  }
+
+  plumber::forward()
+}
 
 #' Return match results data
 #' @param fetch_data Whether to fetch fresh data from afltables.com
