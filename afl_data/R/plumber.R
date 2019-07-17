@@ -4,15 +4,19 @@ source(paste0(getwd(), "/R/betting-odds.R"))
 source(paste0(getwd(), "/R/fixtures.R"))
 source(paste0(getwd(), "/R/rosters.R"))
 
-FIRST_AFL_SEASON = "1897-01-01"
-END_OF_YEAR = paste0(lubridate::year(Sys.Date()), "-12-31")
+FIRST_AFL_SEASON <- "1897-01-01"
+END_OF_YEAR <- paste0(lubridate::year(Sys.Date()), "-12-31")
+PRODUCTION <- "production"
 
 #* @filter checkAuth
 function(req, res){
-  if (
-    tolower(Sys.getenv("R_ENV")) == "production" &&
-    req$HTTP_AUTHORIZATION != paste0("Bearer ", Sys.getenv("GCR_TOKEN"))
-  ){
+  request_token <- ifelse(
+    is.null(req$HTTP_AUTHORIZATION), '', req$HTTP_AUTHORIZATION
+  )
+  valid_token <- paste0("Bearer ", Sys.getenv("GCR_TOKEN"))
+  is_production <- tolower(Sys.getenv("R_ENV")) == PRODUCTION
+
+  if (is_production && request_token != valid_token) {
     res$status <- 401
     return(list(error="Not authorized"))
   }
