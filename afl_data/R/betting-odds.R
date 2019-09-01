@@ -1,3 +1,5 @@
+future::plan(future::multiprocess)
+
 FOOTY_WIRE_DOMAIN <- "https://www.footywire.com"
 BETTING_PATH <- "/afl/footy/afl_betting"
 BETTING_COL_NAMES <- c(
@@ -232,7 +234,8 @@ fetch_betting_odds <- function(start_date, end_date) {
 
   return(
     lubridate::year(start_date):lubridate::year(end_date) %>%
-      purrr::map(fetch_betting_odds_page) %>%
+      purrr::map(~ future::future({ fetch_betting_odds_page(.) })) %>%
+      future::values(.) %>%
       unlist(., recursive = FALSE) %>%
       normalize_row_length %>%
       unlist(.) %>%
