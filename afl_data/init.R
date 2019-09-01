@@ -2,6 +2,7 @@ install.packages("devtools", quiet = TRUE, verbose = FALSE)
 
 install.packages("BH", quiet = TRUE, verbose = FALSE)
 install.packages("dplyr", quiet = TRUE, verbose = FALSE)
+install.packages("future", quiet = TRUE, verbose = FALSE)
 install.packages("plogr", quiet = TRUE, verbose = FALSE)
 install.packages("plumber", quiet = TRUE, verbose = FALSE)
 install.packages("progress", quiet = TRUE, verbose = FALSE)
