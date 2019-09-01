@@ -16,6 +16,7 @@ Imports:
     dplyr,
     devtools,
     fitzRoy,
+    future,
     plogr,
     plumber,
     progress,
