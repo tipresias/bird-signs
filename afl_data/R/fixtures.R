@@ -1,3 +1,5 @@
+future::plan(future::multiprocess)
+
 EARLIEST_VALID_SEASON = 2004
 
 #' Fetches fixture data via the fitzRoy package and filters by date range.
@@ -19,7 +21,8 @@ fetch_fixtures <- function(start_date, end_date) {
   }
 
   max(first_season, EARLIEST_VALID_SEASON):last_season %>%
-    purrr::map(fitzRoy::get_fixture) %>%
+    purrr::map(~ future::future({ fitzRoy::get_fixture(.) })) %>%
+    future::values(.) %>%
     dplyr::bind_rows(.) %>%
     dplyr::filter(., Date >= start_date & Date <= end_date) %>%
     dplyr::rename_all(
