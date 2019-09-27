@@ -25,6 +25,6 @@ before_deploy:
   - gcloud --quiet config set project $PROJECT_ID
 deploy:
   provider: script
-  script: ./scripts/deploy.sh
+  script: travis_wait 30 ./scripts/deploy.sh
   on:
     branch: master
