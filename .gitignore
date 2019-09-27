@@ -26,3 +26,6 @@ packrat/lib*/
 
 # GCP files
 .gcloud
+
+# Travis CI files
+travis_wait_*.log
