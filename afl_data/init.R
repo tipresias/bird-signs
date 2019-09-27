@@ -12,7 +12,12 @@ install.packages("stringr", quiet = TRUE, verbose = FALSE)
 
 # Installing via git rather than github to avoid unauthenticated API
 # rate limits in CI
-devtools::install_git("git://github.com/jimmyday12/fitzRoy.git", quiet = TRUE)
+devtools::install_git(
+  # Using my fork until the related bug-fix PR is merged
+  "git://github.com/cfranklin11/fitzRoy.git",
+  ref = "cf/fix-finals-round-numbers",
+  quite = TRUE
+)
 # Only using master-branch install to get new pivot_wider function.
 # Can switch back to CRAN once that gets released
 devtools::install_git("git://github.com/tidyverse/tidyr.git", quiet = TRUE)
