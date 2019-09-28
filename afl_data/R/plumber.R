@@ -33,7 +33,7 @@ function(
   fetch_data = FALSE, start_date = FIRST_AFL_SEASON, end_date = Sys.Date()
 ) {
   fetch_match_results(fetch_data, start_date, end_date) %>%
-    jsonlite::toJSON(.)
+    list(data = .)
 }
 
 #' Return player data
@@ -42,7 +42,7 @@ function(
 #' @get /players
 function(start_date = FIRST_AFL_SEASON, end_date = Sys.Date()) {
   fetch_player_results(start_date, end_date) %>%
-    jsonlite::toJSON(.)
+    list(data = .)
 }
 
 #' Return betting data along with some basic match data
@@ -51,7 +51,7 @@ function(start_date = FIRST_AFL_SEASON, end_date = Sys.Date()) {
 #' @get /betting_odds
 function(start_date = FIRST_AFL_SEASON, end_date = Sys.Date()) {
   fetch_betting_odds(start_date, end_date) %>%
-    jsonlite::toJSON(.)
+    list(data = .)
 }
 
 #' Return fixture data (match data without results)
@@ -60,7 +60,7 @@ function(start_date = FIRST_AFL_SEASON, end_date = Sys.Date()) {
 #' @get /fixtures
 function(start_date = FIRST_AFL_SEASON, end_date = END_OF_YEAR) {
   fetch_fixtures(start_date, end_date) %>%
-    jsonlite::toJSON(.)
+    list(data = .)
 }
 
 #' Return team rosters for a given round (current season only)
@@ -68,5 +68,5 @@ function(start_date = FIRST_AFL_SEASON, end_date = END_OF_YEAR) {
 #' @get /rosters
 function(round_number = NULL) {
   fetch_rosters(round_number) %>%
-    jsonlite::toJSON(.)
+    list(data = .)
 }
