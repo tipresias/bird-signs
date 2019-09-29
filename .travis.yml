@@ -23,9 +23,12 @@ before_deploy:
   - gcloud --quiet components update
   - gcloud auth activate-service-account --key-file ${HOME}/.gcloud/keyfile.json
   - gcloud --quiet config set project $PROJECT_ID
+  # Need travis_wait for the deploy script for the same reason as for the docker build command
+  - export -f travis_wait
+  - export -f travis_jigger
 deploy:
   provider: script
-  # Need travis_wait for the deploy script for the same reason as for the docker build command
-  script: bash export -f travis_wait && export -f travis_jigger && ./scripts/deploy.sh
+  script: ./scripts/deploy.sh
   on:
-    branch: master
+    # branch: master
+    all_branches: true
