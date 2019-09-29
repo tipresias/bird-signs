@@ -26,6 +26,6 @@ before_deploy:
 deploy:
   provider: script
   # Need travis_wait for the deploy script for the same reason as for the docker build command
-  script: export -f travis_wait && export -f travis_jigger && ./scripts/deploy.sh
+  script: bash export -f travis_wait && export -f travis_jigger && ./scripts/deploy.sh
   on:
     branch: master
