@@ -33,8 +33,7 @@ describe("fetch_betting_odds()", {
     expect_type(betting_odds_data$away_line_odds, "double")
     expect_type(betting_odds_data$home_line_paid, "double")
     expect_type(betting_odds_data$away_line_paid, "double")
-    expect_type(betting_odds_data$round, "character")
-    expect_type(betting_odds_data$round_number, "double")
+    expect_type(betting_odds_data$round, "double")
     expect_type(betting_odds_data$season, "double")
   })
 
