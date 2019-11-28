@@ -13,12 +13,7 @@ install.packages("tidyr", quiet = TRUE, verbose = FALSE)
 
 # Installing via git rather than github to avoid unauthenticated API
 # rate limits in CI
-devtools::install_git(
-  # Using my fork until the related bug-fix PR is merged
-  "git://github.com/cfranklin11/fitzRoy.git",
-  ref = "cf/fix-finals-round-numbers",
-  quite = TRUE
-)
+devtools::install_git("git://github.com/jimmyday12/fitzRoy.git", quiet = TRUE)
 
 install.packages("roxygen2", quiet = TRUE, verbose = FALSE)
 install.packages("testthat", quiet = TRUE, verbose = FALSE)
