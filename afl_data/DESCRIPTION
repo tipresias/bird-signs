@@ -29,4 +29,4 @@ Suggests:
     testthat,
 Remotes:
     git@github.com:jimmyday12/fitzRoy.git,
-RoxygenNote: 7.0.1
+RoxygenNote: 7.0.2
