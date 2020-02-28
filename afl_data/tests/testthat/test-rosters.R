@@ -1,9 +1,10 @@
 describe("fetch_rosters()", {
+  # driver = RSelenium::rsDriver(browser = "firefox")
   # Fetching data takes awhile, so we do it once for all tests
   roster_data <- fetch_rosters(NULL)
 
   it("returns a data.frame", {
-    expect_equal(class(roster_data), "data.frame")
+    expect_true("data.frame" %in% class(roster_data))
   })
 
   it("has the correct data type for each column", {
