@@ -22,8 +22,11 @@ Imports:
     progress,
     purrr,
     rvest,
+    RSelenium,
     stringr,
-    tidyr
+    tibble,
+    tidyr,
+    wdman
 Suggests:
     roxygen2,
     testthat,
