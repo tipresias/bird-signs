@@ -8,9 +8,12 @@ install.packages("plogr", quiet = TRUE, verbose = FALSE)
 install.packages("plumber", quiet = TRUE, verbose = FALSE)
 install.packages("progress", quiet = TRUE, verbose = FALSE)
 install.packages("purrr", quiet = TRUE, verbose = FALSE)
+install.packages("RSelenium", quiet = TRUE, verbose = FALSE)
 install.packages("rvest", quiet = TRUE, verbose = FALSE)
 install.packages("stringr", quiet = TRUE, verbose = FALSE)
+install.packages("tibble", quiet = TRUE, verbose = FALSE)
 install.packages("tidyr", quiet = TRUE, verbose = FALSE)
+install.packages("wdman", quiet = TRUE, verbose = FALSE)
 
 # Installing via git rather than github to avoid unauthenticated API
 # rate limits in CI
