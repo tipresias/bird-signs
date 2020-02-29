@@ -1,4 +1,4 @@
-FROM r-base:3.6.2
+FROM rocker/tidyverse:3.6.1
 
 RUN apt-get update && apt-get -y install \
   libcurl4-openssl-dev \
