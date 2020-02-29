@@ -4,7 +4,10 @@ RUN apt-get update \
   && apt-get -y --allow-downgrades --fix-broken install \
   # Special version of firefox package for debian stable, which is the base
   # for the tidyverse image
-  firefox-esr
+  firefox-esr \
+  # The following needed for RSelenium
+  default-jre \
+  lbzip2
 
 WORKDIR /app/afl_data
 
