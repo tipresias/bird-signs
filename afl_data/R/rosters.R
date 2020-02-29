@@ -119,8 +119,22 @@ PREMATCH_LINKS_COUNT = 3
 #' a given round from afl.com.au, cleans it, and returns it as a dataframe.
 #' @param round_number Which round to get rosters for
 #' @export
-fetch_rosters <- function(round_number, driver = RSelenium::rsDriver(browser = "firefox")) {
+fetch_rosters <- function(
+  round_number,
+  driver = RSelenium::rsDriver(
+    browser = "firefox",
+    extraCapabilities = list(
+      "moz:firefoxOptions" = list(
+        args = list('--headless')
+      )
+    ),
+    # We don't need to check for dependency binaries, because we load them
+    # in the build step of the Docker image.
+    check = FALSE
+  )
+) {
   browser <- driver$client
+  browser$open()
   browser$navigate(paste0(AFL_DOMAIN, TEAMS_PATH, "?GameWeeks=", round_number))
 
   expand_roster_elements <- list()

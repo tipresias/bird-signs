@@ -12,7 +12,15 @@ RUN apt-get update \
 WORKDIR /app/afl_data
 
 COPY init.R ./
-RUN Rscript init.R
+
+ARG LOAD_RSELENIUM="RSelenium::rsDriver(browser = 'firefox', extraCapabilities = list('moz:firefoxOptions' = list(args = list('--headless'))))"
+
+RUN Rscript init.R \
+  # We create an RSelenium driver to download the necessary binaries
+  # during the build step rather than doing so every time
+  # the relevant API endpoint is called, because it slows down API calls
+  # way too much.
+  && Rscript -e "${LOAD_RSELENIUM}"
 
 COPY . /app/afl_data
 
