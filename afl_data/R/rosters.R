@@ -8,11 +8,6 @@ PLAYER_COL_NAMES = c(
   "date",
   "match_id"
 )
-# As of 30-05-2019 afl.com.au has seen fit to change the structure of the HTML
-# on the /news/teams page, adding promotional links to the last 3 positions,
-# shifting the match datetime to 4th from last. This only applies to matches
-# that haven't been played yet.
-PREMATCH_LINKS_COUNT = 3
 
 
 .parse_date_time <- function(date_time_string) {
