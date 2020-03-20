@@ -16,12 +16,18 @@ function(req, res){
   valid_token <- paste0("Bearer ", Sys.getenv("GCR_TOKEN"))
   is_production <- tolower(Sys.getenv("R_ENV")) == PRODUCTION
 
-  if (is_production && request_token != valid_token) {
+  if (is_production && request_token != valid_token && req$PATH_INFO != "/") {
     res$status <- 401
     return(list(error="Not authorized"))
   }
 
   plumber::forward()
+}
+
+#' Return a basic message for site health checks
+#' @get /
+function() {
+  "Welcome to BirdSigns, the AFL data service!"
 }
 
 #' Return match results data
