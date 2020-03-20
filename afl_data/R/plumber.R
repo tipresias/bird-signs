@@ -16,7 +16,7 @@ function(req, res){
   valid_token <- paste0("Bearer ", Sys.getenv("GCR_TOKEN"))
   is_production <- tolower(Sys.getenv("R_ENV")) == PRODUCTION
 
-  if (is_production && request_token != valid_token) {
+  if (is_production && request_token != valid_token && req$PATH_INFO != "/") {
     res$status <- 401
     return(list(error="Not authorized"))
   }
@@ -24,15 +24,18 @@ function(req, res){
   plumber::forward()
 }
 
+#' Return a basic message for site health checks
+#' @get /
+function() {
+  "Welcome to BirdSigns, the AFL data service!"
+}
+
 #' Return match results data
-#' @param fetch_data Whether to fetch fresh data from afltables.com
 #' @param start_date Minimum match date for fetched data
 #' @param end_date Maximum match date for fetched data
 #' @get /matches
-function(
-  fetch_data = FALSE, start_date = FIRST_AFL_SEASON, end_date = Sys.Date()
-) {
-  fetch_match_results(fetch_data, start_date, end_date) %>%
+function(start_date = FIRST_AFL_SEASON, end_date = Sys.Date()) {
+  fetch_match_results(start_date, end_date) %>%
     list(data = .)
 }
 

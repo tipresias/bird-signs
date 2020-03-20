@@ -4,11 +4,9 @@
 \alias{fetch_match_results}
 \title{Fetches match data via the fitzRoy package and filters by date range.}
 \usage{
-fetch_match_results(fetch_data, start_date, end_date)
+fetch_match_results(start_date, end_date)
 }
 \arguments{
-\item{fetch_data}{Whether to fetch fresh data from afltables}
-
 \item{start_date}{Minimum match date for fetched data}
 
 \item{end_date}{Maximum match date for fetched data}
