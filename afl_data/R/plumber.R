@@ -25,14 +25,11 @@ function(req, res){
 }
 
 #' Return match results data
-#' @param fetch_data Whether to fetch fresh data from afltables.com
 #' @param start_date Minimum match date for fetched data
 #' @param end_date Maximum match date for fetched data
 #' @get /matches
-function(
-  fetch_data = FALSE, start_date = FIRST_AFL_SEASON, end_date = Sys.Date()
-) {
-  fetch_match_results(fetch_data, start_date, end_date) %>%
+function(start_date = FIRST_AFL_SEASON, end_date = Sys.Date()) {
+  fetch_match_results(start_date, end_date) %>%
     list(data = .)
 }
 
