@@ -5,7 +5,11 @@
 \title{Scrapes team roster data (i.e. which players are playing for each team) for
 a given round from afl.com.au, cleans it, and returns it as a dataframe.}
 \usage{
-fetch_rosters(round_number)
+fetch_rosters(
+  round_number,
+  driver = RSelenium::rsDriver(browser = "firefox", extraCapabilities =
+    list(`moz:firefoxOptions` = list(args = list("--headless"))), check = FALSE)
+)
 }
 \arguments{
 \item{round_number}{Which round to get rosters for}
