@@ -1,8 +1,8 @@
 describe("fetch_rosters()", {
   browser <- RSelenium::remoteDriver(
-    remoteServerAddr = server_address,
+    remoteServerAddr = "browser",
     browser = 'chrome',
-    port = port,
+    port = 4444L,
     extraCapabilities = list(
       "goog:chromeOptions" = list(
         args = list(

@@ -16,11 +16,17 @@ Imports:
     future,
     plumber,
     RSelenium,
-    tidyverse,
-    wdman
+    wdman,
+    dplyr,
+    lubridate,
+    purrr,
+    stringr,
+    tibble,
+    tidyr,
+    tidyselect,
 Suggests:
     roxygen2,
     testthat,
 Remotes:
     git@github.com:jimmyday12/fitzRoy.git,
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0

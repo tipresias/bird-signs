@@ -118,6 +118,7 @@ PLAYER_COL_NAMES = c(
 #' Scrapes team roster data (i.e. which players are playing for each team) for
 #' a given round from afl.com.au, cleans it, and returns it as a dataframe.
 #' @param round_number Which round to get rosters for
+#' @param browser Selenium browser object for navigating to pages and crawling the DOM.
 #' @export
 fetch_rosters <- function(round_number, browser) {
   browser$open()
