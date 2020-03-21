@@ -16,6 +16,6 @@ services:
     tty: true
     command: Rscript app.R
   browser:
-    image: selenium/standalone-firefox:3.141.59
+    image: selenium/standalone-chrome:3.141.59
     ports:
       - "4444:4444"

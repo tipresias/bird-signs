@@ -148,11 +148,18 @@ fetch_rosters <- function(round_number, browser) {
     return(expand_roster_elements)
   }
 
+  # We need to wait a second between clicking, because otherwise
+  # the browser gets confused and skips some of them.
+  click_expand_element <- function(el) {
+    el$clickElement()
+    Sys.sleep(1)
+  }
+
   # We need to expand all of the hidden roster elements before collecting text,
   # because Selenium can't interact with hidden elements,
   # and sticking with RSelenium interactions rather than resorting
   # to arbitrary JavaScript seems slightly less hacky.
-  expand_roster_elements %>% purrr::map(~ .x$clickElement())
+  expand_roster_elements %>% purrr::map(click_expand_element)
 
   roster_data <- .collect_team_rosters(browser) %>%
     purrr::pmap(.parse_match_data) %>%
