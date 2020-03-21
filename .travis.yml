@@ -1,10 +1,8 @@
 sudo: required
-# Cache Gcloud SDK between commands
-cache:
-  directories:
-    - "$HOME/google-cloud-sdk/"
 services:
   - docker
+env:
+  IP_ADDRESS: 167.71.212.75
 before_script:
   - docker pull cfranklin11/tipresias_afl_data:latest
   # R packages take forever to install, so we give it 30 minutes before timing out
@@ -15,18 +13,8 @@ script:
 before_deploy:
   - echo "$DOCKER_PASSWORD" | docker login -u cfranklin11 --password-stdin
   - docker push cfranklin11/tipresias_afl_data:latest
-  - mkdir $HOME/.gcloud
-  - openssl aes-256-cbc -K $encrypted_b3ce34c885bd_key -iv $encrypted_b3ce34c885bd_iv -in keyfile.json.enc -out $HOME/.gcloud/keyfile.json -d
-  - if [ ! -d "$HOME/google-cloud-sdk/bin" ]; then rm -rf $HOME/google-cloud-sdk; export CLOUDSDK_CORE_DISABLE_PROMPTS=1; curl https://sdk.cloud.google.com | bash; fi
-  - source /home/travis/google-cloud-sdk/path.bash.inc
-  - gcloud --quiet version
-  - gcloud --quiet components install beta
-  - gcloud --quiet components update
-  - gcloud auth activate-service-account --key-file ${HOME}/.gcloud/keyfile.json
-  - gcloud --quiet config set project $PROJECT_ID
-  # Need travis_wait for the deploy script for the same reason as for the docker build command
-  - export -f travis_wait
-  - export -f travis_jigger
+  - openssl aes-256-cbc -K $encrypted_b3ce34c885bd_key -iv $encrypted_b3ce34c885bd_iv -in deploy_rsa.enc -out ${HOME}/.ssh/deploy_rsa -d
+  - ssh-keyscan -H ${IP_ADDRESS} >> ${HOME}/.ssh/known_hosts
 deploy:
   provider: script
   script: ./scripts/deploy.sh
