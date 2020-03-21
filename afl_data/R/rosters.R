@@ -73,7 +73,7 @@ PLAYER_COL_NAMES = c(
       names_from = team_type,
       values_from = team
     ) %>%
-    tidyr::fill(., HOME_AWAY, .direction = "downup") %>%
+    tidyr::fill(., tidyselect::all_of(HOME_AWAY), .direction = "downup") %>%
     dplyr::rename(., home_team = home, away_team = away) %>%
     dplyr::mutate(
       .,
