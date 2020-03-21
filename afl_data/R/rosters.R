@@ -12,10 +12,15 @@ PLAYER_COL_NAMES = c(
 
 .parse_date_time <- function(date_time_string) {
   lubridate::parse_date_time(
-    date_time_string, "%A %b %d %I:%M %p",
-    tz = "Australia/Melbourne",
+    date_time_string, "%A %b %d %I:%M %p %y",
     quiet = TRUE
-  )
+  ) %>%
+    # afl.com.au must detect timezone via the browser to display the match times
+    # in the user's local time, so they return UTC to our scraper.
+    # We convert everything to Melbourne time, because it's close enough,
+    # and I don't want to bother figuring out local time for all the venues,
+    # even though those are the timezones for raw match data.
+    lubridate::with_tz(., tzone = "Australia/Melbourne")
 }
 
 
@@ -73,7 +78,7 @@ PLAYER_COL_NAMES = c(
     dplyr::mutate(
       .,
       match_id = rep_len(index, nrow(.)),
-      date = rep_len(paste(match_date_time, this_year, collapse = " "), nrow(.))
+      date = rep_len(paste(paste(match_date_time, collapse = " "), this_year), nrow(.))
     )
 }
 
