@@ -116,19 +116,16 @@ PLAYER_COL_NAMES = c(
 #' @export
 fetch_rosters <- function(
   round_number,
-  driver = RSelenium::rsDriver(
-    browser = "firefox",
+  browser = RSelenium::remoteDriver(
+    remoteServerAddr = "localhost",
+    port = 4444L,
     extraCapabilities = list(
       "moz:firefoxOptions" = list(
         args = list('--headless')
       )
     ),
-    # We don't need to check for dependency binaries, because we load them
-    # in the build step of the Docker image.
-    check = FALSE
   )
 ) {
-  browser <- driver$client
   browser$open()
   browser$navigate(paste0(AFL_DOMAIN, TEAMS_PATH, "?GameWeeks=", round_number))
 
@@ -168,7 +165,7 @@ fetch_rosters <- function(
     dplyr::bind_rows(.) %>%
     .clean_data_frame(.)
 
-  browser$closeall()
+  browser$close()
 
   roster_data
 }
