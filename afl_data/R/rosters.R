@@ -119,18 +119,7 @@ PLAYER_COL_NAMES = c(
 #' a given round from afl.com.au, cleans it, and returns it as a dataframe.
 #' @param round_number Which round to get rosters for
 #' @export
-fetch_rosters <- function(
-  round_number,
-  browser = RSelenium::remoteDriver(
-    remoteServerAddr = "localhost",
-    port = 4444L,
-    extraCapabilities = list(
-      "moz:firefoxOptions" = list(
-        args = list('--headless')
-      )
-    ),
-  )
-) {
+fetch_rosters <- function(round_number, browser) {
   browser$open()
   browser$navigate(paste0(AFL_DOMAIN, TEAMS_PATH, "?GameWeeks=", round_number))
 
