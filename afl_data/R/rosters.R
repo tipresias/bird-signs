@@ -12,10 +12,15 @@ PLAYER_COL_NAMES = c(
 
 .parse_date_time <- function(date_time_string) {
   lubridate::parse_date_time(
-    date_time_string, "%A %b %d %I:%M %p",
-    tz = "Australia/Melbourne",
+    date_time_string, "%A %b %d %I:%M %p %y",
     quiet = TRUE
-  )
+  ) %>%
+    # afl.com.au must detect timezone via the browser to display the match times
+    # in the user's local time, so they return UTC to our scraper.
+    # We convert everything to Melbourne time, because it's close enough,
+    # and I don't want to bother figuring out local time for all the venues,
+    # even though those are the timezones for raw match data.
+    lubridate::with_tz(., tzone = "Australia/Melbourne")
 }
 
 
@@ -68,12 +73,12 @@ PLAYER_COL_NAMES = c(
       names_from = team_type,
       values_from = team
     ) %>%
-    tidyr::fill(., HOME_AWAY, .direction = "downup") %>%
+    tidyr::fill(., tidyselect::all_of(HOME_AWAY), .direction = "downup") %>%
     dplyr::rename(., home_team = home, away_team = away) %>%
     dplyr::mutate(
       .,
       match_id = rep_len(index, nrow(.)),
-      date = rep_len(paste(match_date_time, this_year, collapse = " "), nrow(.))
+      date = rep_len(paste(paste(match_date_time, collapse = " "), this_year), nrow(.))
     )
 }
 
@@ -114,21 +119,7 @@ PLAYER_COL_NAMES = c(
 #' a given round from afl.com.au, cleans it, and returns it as a dataframe.
 #' @param round_number Which round to get rosters for
 #' @export
-fetch_rosters <- function(
-  round_number,
-  driver = RSelenium::rsDriver(
-    browser = "firefox",
-    extraCapabilities = list(
-      "moz:firefoxOptions" = list(
-        args = list('--headless')
-      )
-    ),
-    # We don't need to check for dependency binaries, because we load them
-    # in the build step of the Docker image.
-    check = FALSE
-  )
-) {
-  browser <- driver$client
+fetch_rosters <- function(round_number, browser) {
   browser$open()
   browser$navigate(paste0(AFL_DOMAIN, TEAMS_PATH, "?GameWeeks=", round_number))
 
@@ -157,18 +148,25 @@ fetch_rosters <- function(
     return(expand_roster_elements)
   }
 
+  # We need to wait a second between clicking, because otherwise
+  # the browser gets confused and skips some of them.
+  click_expand_element <- function(el) {
+    el$clickElement()
+    Sys.sleep(1)
+  }
+
   # We need to expand all of the hidden roster elements before collecting text,
   # because Selenium can't interact with hidden elements,
   # and sticking with RSelenium interactions rather than resorting
   # to arbitrary JavaScript seems slightly less hacky.
-  expand_roster_elements %>% purrr::map(~ .x$clickElement())
+  expand_roster_elements %>% purrr::map(click_expand_element)
 
   roster_data <- .collect_team_rosters(browser) %>%
     purrr::pmap(.parse_match_data) %>%
     dplyr::bind_rows(.) %>%
     .clean_data_frame(.)
 
-  browser$closeall()
+  browser$close()
 
   roster_data
 }

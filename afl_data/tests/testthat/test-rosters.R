@@ -1,7 +1,23 @@
 describe("fetch_rosters()", {
-  # driver = RSelenium::rsDriver(browser = "firefox")
+  browser <- RSelenium::remoteDriver(
+    remoteServerAddr = server_address,
+    browser = 'chrome',
+    port = port,
+    extraCapabilities = list(
+      "goog:chromeOptions" = list(
+        args = list(
+          "--headless",
+          "--no-sandbox",
+          "--disable-gpu",
+          "--disable-dev-shm-usage",
+          "window-size=1024,768"
+        )
+      )
+    )
+  )
+
   # Fetching data takes awhile, so we do it once for all tests
-  roster_data <- fetch_rosters(NULL)
+  roster_data <- fetch_rosters(NULL, browser)
 
   it("returns a data.frame", {
     expect_true("data.frame" %in% class(roster_data))

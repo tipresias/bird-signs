@@ -1,19 +1,13 @@
 version: "3.2"
 services:
   app:
-    build: ./afl_data
-    volumes:
-      - ./afl_data:/app/afl_data
+    image: cfranklin11/tipresias_afl_data:latest
     depends_on:
       - browser
-    env_file:
-      .env
     environment:
       - R_ENV=development
     ports:
       - "8080:8080"
-    stdin_open: true
-    tty: true
     command: Rscript app.R
   browser:
     image: selenium/standalone-chrome:3.141.59
