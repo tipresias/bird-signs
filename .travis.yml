@@ -10,7 +10,8 @@ before_script:
   # R packages take forever to install, so we give it 30 minutes before timing out
   - travis_wait 30 docker build --cache-from cfranklin11/tipresias_afl_data:latest -t cfranklin11/tipresias_afl_data:latest -f ./afl_data/ci.Dockerfile ./afl_data
 script:
-  - docker run cfranklin11/tipresias_afl_data:latest Rscript -e "devtools::test()"
+  - docker-compose -f docker-compose.ci.yml up -d
+  - ./scripts/wait-for-it.sh localhost:4444 -- docker-compose -f docker-compose.ci.yml run app Rscript -e "devtools::test()"
 before_deploy:
   - echo "$DOCKER_PASSWORD" | docker login -u cfranklin11 --password-stdin
   - docker push cfranklin11/tipresias_afl_data:latest
