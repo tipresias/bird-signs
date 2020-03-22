@@ -74,15 +74,8 @@ function(start_date = FIRST_AFL_SEASON, end_date = END_OF_YEAR) {
 #' @param round_number Fetch the rosters from this round. Note that missing param defaults to current round
 #' @get /rosters
 function(round_number = NULL) {
-  PRODUCTION_HOST <- "selenium-chrome-acta2grrga-uc.a.run.app"
-
-  if(.is_production()) {
-    server_address <- PRODUCTION_HOST
-    port <- 80L
-  } else {
-    server_address <- "browser"
-    port <- 4444L
-  }
+  server_address <- "browser"
+  port <- 4444L
 
   browser <- RSelenium::remoteDriver(
     remoteServerAddr = server_address,
