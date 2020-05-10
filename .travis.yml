@@ -1,8 +1,6 @@
 sudo: required
 services:
   - docker
-env:
-  IP_ADDRESS: 167.71.212.75
 before_script:
   - docker pull cfranklin11/tipresias_afl_data:latest
   # R packages take forever to install, so we give it 30 minutes before timing out
