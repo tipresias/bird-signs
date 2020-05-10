@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-DOCKER_COMPOSE_FILE=/var/www/bird-signs/docker-compose.prod.yml
+DOCKER_COMPOSE_FILE=/var/www/bird_signs/docker-compose.prod.yml
 
 sudo chmod 600 ~/.ssh/deploy_rsa
 sudo chmod 755 ~/.ssh
