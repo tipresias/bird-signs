@@ -21,8 +21,11 @@ describe("fetch_rosters()", {
   browser$navigate(paste0(AFL_DOMAIN, TEAMS_PATH))
   roster_data <- fetch_rosters(browser)
   browser$close()
+  browser$closeServer()
 
   it("returns a data.frame or empty list", {
+    # Sometimes the roster page is blank, so we have to accept an empty list
+    # as a legitimate result
     if (length(roster_data) == 0) {
       expect_true("list" %in% class(roster_data))
     } else {

@@ -96,12 +96,13 @@ function(round_number = NULL) {
     )
   )
 
-  browser$open()
+  tryCatch({
+    browser$open()
 
-  browser$navigate(paste0(AFL_DOMAIN, TEAMS_PATH, "?GameWeeks=", round_number))
-  roster_data <- fetch_rosters(browser) %>% list(data = .)
-
-  browser$close()
-
-  roster_data
+    browser$navigate(paste0(AFL_DOMAIN, TEAMS_PATH, "?GameWeeks=", round_number))
+    roster_data <- fetch_rosters(browser) %>% list(data = .)
+  }, finally = {
+    browser$close()
+    browser$closeServer()
+  })
 }
