@@ -6,6 +6,8 @@ source(paste0(getwd(), "/R/rosters.R"))
 
 FIRST_AFL_SEASON <- "1897-01-01"
 END_OF_YEAR <- paste0(lubridate::year(Sys.Date()), "-12-31")
+AFL_DOMAIN = "https://www.afl.com.au"
+TEAMS_PATH = "/matches/team-lineups"
 
 .is_production <- function() {
   PRODUCTION <- "production"
@@ -94,6 +96,12 @@ function(round_number = NULL) {
     )
   )
 
-  fetch_rosters(round_number, browser) %>%
-    list(data = .)
+  browser$open()
+
+  browser$navigate(paste0(AFL_DOMAIN, TEAMS_PATH, "?GameWeeks=", round_number))
+  roster_data <- fetch_rosters(browser) %>% list(data = .)
+
+  browser$close()
+
+  roster_data
 }
