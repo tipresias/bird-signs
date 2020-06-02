@@ -1,5 +1,3 @@
-AFL_DOMAIN = "https://www.afl.com.au"
-TEAMS_PATH = "/matches/team-lineups"
 PLAYER_COL_NAMES = c(
   "player_name",
   "playing_for",
@@ -115,40 +113,7 @@ PLAYER_COL_NAMES = c(
   list(match_indices, match_date_times, match_roster_elements)
 }
 
-#' Scrapes team roster data (i.e. which players are playing for each team) for
-#' a given round from afl.com.au, cleans it, and returns it as a dataframe.
-#' @param round_number Which round to get rosters for
-#' @param browser Selenium browser object for navigating to pages and crawling the DOM.
-#' @export
-fetch_rosters <- function(round_number, browser) {
-  browser$open()
-  browser$navigate(paste0(AFL_DOMAIN, TEAMS_PATH, "?GameWeeks=", round_number))
-
-  expand_roster_elements <- list()
-  attempts <- 0
-
-  # afl.com.au is using some sort of javascript framework for rendering
-  # any data-based elements, and they lazy-load those elements
-  # (probably some sort of componentDidMount -> API call),
-  # which means that data-based elements load a second or two
-  # after the rest of the page, which means we need to retry
-  # accessing the relevant DOM elements a few times before they finally load.
-  while (length(expand_roster_elements) == 0 && attempts < 5) {
-    Sys.sleep(1)
-
-    expand_roster_elements <- browser$findElements(
-      using = "css",
-      value = ".team-lineups__expandable-trigger.js-expand-trigger.is-hidden"
-    )
-    attempts <- attempts + 1
-  }
-
-  # If we can't find anything, we're probably trying to get rosters for a round
-  # for which they haven't been announced yet.
-  if (length(expand_roster_elements) == 0) {
-    return(expand_roster_elements)
-  }
-
+.expand_roster_elements <- function(expandable_roster_elements) {
   # We need to wait a second between clicking, because otherwise
   # the browser gets confused and skips some of them.
   click_expand_element <- function(el) {
@@ -160,14 +125,49 @@ fetch_rosters <- function(round_number, browser) {
   # because Selenium can't interact with hidden elements,
   # and sticking with RSelenium interactions rather than resorting
   # to arbitrary JavaScript seems slightly less hacky.
-  expand_roster_elements %>% purrr::map(click_expand_element)
+  expandable_roster_elements %>% purrr::map(click_expand_element)
+}
 
-  roster_data <- .collect_team_rosters(browser) %>%
+.find_expandable_roster_elements <- function(browser) {
+  expandable_roster_elements <- list()
+  attempts <- 0
+
+  # afl.com.au is using some sort of javascript framework for rendering
+  # any data-based elements, and they lazy-load those elements
+  # (probably some sort of componentDidMount -> API call),
+  # which means that data-based elements load a second or two
+  # after the rest of the page, which means we need to retry
+  # accessing the relevant DOM elements a few times before they finally load.
+  while (length(expandable_roster_elements) == 0 && attempts < 5) {
+    Sys.sleep(1)
+
+    expandable_roster_elements <- browser$findElements(
+      using = "css",
+      value = ".team-lineups__expandable-trigger.js-expand-trigger.is-hidden"
+    )
+    attempts <- attempts + 1
+  }
+
+  expandable_roster_elements
+}
+
+#' Scrapes team roster data (i.e. which players are playing for each team) for
+#' a given round from afl.com.au, cleans it, and returns it as a dataframe.
+#' @param browser Selenium browser object for navigating to pages and crawling the DOM.
+#' @export
+fetch_rosters <- function(browser) {
+  expandable_roster_elements <- .find_expandable_roster_elements(browser)
+
+  # If we can't find anything, we're probably trying to get rosters for a round
+  # for which they haven't been announced yet.
+  if (length(expandable_roster_elements) == 0) {
+    return(expandable_roster_elements)
+  }
+
+  .expand_roster_elements(expandable_roster_elements)
+
+  .collect_team_rosters(browser) %>%
     purrr::pmap(.parse_match_data) %>%
     dplyr::bind_rows(.) %>%
     .clean_data_frame(.)
-
-  browser$close()
-
-  roster_data
 }
