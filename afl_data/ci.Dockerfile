@@ -6,9 +6,6 @@ FROM rocker/tidyverse:4.0.0@sha256:1ba79a338ff8338a99e523b73136cac31f4a0433f7491
 
 RUN apt-get update \
   && apt-get -y --allow-downgrades --fix-broken install \
-  # Special version of firefox package for debian stable, which is the base
-  # for the tidyverse image
-  firefox-esr \
   # The following needed for RSelenium
   default-jre \
   lbzip2
@@ -17,14 +14,7 @@ WORKDIR /app/afl_data
 
 COPY init.R ./
 
-ARG LOAD_RSELENIUM="RSelenium::rsDriver(browser = 'firefox', extraCapabilities = list('moz:firefoxOptions' = list(args = list('--headless'))))"
-
-RUN Rscript init.R \
-  # We create an RSelenium driver to download the necessary binaries
-  # during the build step rather than doing so every time
-  # the relevant API endpoint is called, because it slows down API calls
-  # way too much.
-  && Rscript -e "${LOAD_RSELENIUM}"
+RUN Rscript init.R
 
 COPY . /app/afl_data
 
