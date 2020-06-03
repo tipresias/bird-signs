@@ -1,4 +1,4 @@
-FROM rocker/tidyverse:3.6.3
+FROM rocker/tidyverse:4.0.0
 
 RUN apt-get update \
   && apt-get -y --allow-downgrades --fix-broken install \
