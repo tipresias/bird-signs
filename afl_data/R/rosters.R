@@ -170,6 +170,7 @@ PLAYER_COL_NAMES = c(
 
 #' Scrapes team roster data (i.e. which players are playing for each team) for
 #' a given round from afl.com.au, cleans it, and returns it as a dataframe.
+#' @importFrom magrittr %>%
 #' @param browser Selenium browser object for navigating to pages and crawling the DOM.
 #' @export
 fetch_rosters <- function(browser) {

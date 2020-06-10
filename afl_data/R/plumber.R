@@ -37,6 +37,7 @@ function() {
 }
 
 #' Return match results data
+#' @importFrom magrittr %>%
 #' @param start_date Minimum match date for fetched data
 #' @param end_date Maximum match date for fetched data
 #' @get /matches
@@ -46,6 +47,7 @@ function(start_date = FIRST_AFL_SEASON, end_date = Sys.Date()) {
 }
 
 #' Return player data
+#' @importFrom magrittr %>%
 #' @param start_date Minimum match date for fetched data
 #' @param end_date Maximum match date for fetched data
 #' @get /players
@@ -55,6 +57,7 @@ function(start_date = FIRST_AFL_SEASON, end_date = Sys.Date()) {
 }
 
 #' Return betting data along with some basic match data
+#' @importFrom magrittr %>%
 #' @param start_date Minimum match date for fetched data
 #' @param end_date Maximum match date for fetched data
 #' @get /betting_odds
@@ -64,6 +67,7 @@ function(start_date = FIRST_AFL_SEASON, end_date = Sys.Date()) {
 }
 
 #' Return fixture data (match data without results)
+#' @importFrom magrittr %>%
 #' @param start_date Minimum match date for fetched data
 #' @param end_date Maximum match date for fetched data
 #' @get /fixtures
@@ -73,6 +77,7 @@ function(start_date = FIRST_AFL_SEASON, end_date = END_OF_YEAR) {
 }
 
 #' Return team rosters for a given round (current season only)
+#' @importFrom magrittr %>%
 #' @param round_number Fetch the rosters from this round. Note that missing param defaults to current round
 #' @get /rosters
 function(round_number = NULL) {
