@@ -25,8 +25,25 @@ PLAYER_COL_NAMES = c(
 .clean_data_frame <- function(roster_df) {
   roster_df %>%
     dplyr::mutate_all(., as.character) %>%
-    dplyr::mutate(., date = .parse_date_time(date)) %>%
+    dplyr::mutate(
+      .,
+      date = .parse_date_time(date),
+      round_number = as.numeric(round_number)
+    ) %>%
     dplyr::mutate(., season = lubridate::year(date))
+}
+
+
+.get_round_number <- function(browser) {
+  roster_url <- browser$getCurrentUrl()
+  # For now, the easiest way to get the round number for the current page is
+  # from the URL parameter GameWeeks=<round number>, because the relevant
+  # elements are buried under a mountain non-semantic JavaScript rendering.
+  # We double extract in the hopes of making it somewhat more robust to potential
+  # changes in the URL structure.
+  roster_url %>%
+    stringr::str_extract(., "GameWeeks=\\d+") %>%
+    stringr::str_extract(., "\\d+")
 }
 
 
@@ -169,5 +186,6 @@ fetch_rosters <- function(browser) {
   .collect_team_rosters(browser) %>%
     purrr::pmap(.parse_match_data) %>%
     dplyr::bind_rows(.) %>%
+    dplyr::mutate(., round_number = .get_round_number(browser)) %>%
     .clean_data_frame(.)
 }
