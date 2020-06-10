@@ -19,6 +19,7 @@ Imports:
     wdman,
     dplyr,
     lubridate,
+    magrittr,
     purrr,
     stringr,
     tibble,

@@ -42,6 +42,7 @@ describe("fetch_rosters()", {
       expect_type(roster_data$date, "double")
       expect_type(roster_data$season, "double")
       expect_type(roster_data$match_id, "character")
+      expect_type(roster_data$round_number, "double")
     }
   })
 })
