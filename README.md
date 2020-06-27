@@ -1,6 +1,6 @@
 # Bird Signs
 
-[![Build Status](https://travis-ci.com/tipresias/bird-signs.svg?branch=master)](https://travis-ci.com/tipresias/bird-signs)
+[![Build Status](https://travis-ci.com/tipresias/bird-signs.svg?branch=main)](https://travis-ci.com/tipresias/bird-signs)
 
 The AFL data API for the Tipresias app and related data-science services
 
@@ -27,8 +27,8 @@ The AFL data API for the Tipresias app and related data-science services
 
 - Deploy app to Google Cloud:
 
-  - Merge a pull request into `master`
+  - Merge a pull request into `main`
   - Manually trigger a deploy:
     - In the Travis dashboard, navigate to the tipresias repository.
-    - Under 'More Options', trigger a build on `master`.
+    - Under 'More Options', trigger a build on `main`.
     - This will build the image, run tests, and deploy to Google Cloud.
