@@ -2,7 +2,7 @@
 # we use a different Dockerfile for CI, because Google Cloud can't deploy
 # when we specify the image with '@sha256', but without it, Travis rebuilds
 # the image from scratch every time.
-FROM rocker/tidyverse:4.0.2@sha256:b8876649d730451c81e0409e358390731a23972fd335cd334378f294c6be57fb
+FROM rocker/tidyverse:4.0.2@sha256:c28e83cb0f9126573b6997afe5a329464e45fc9eb616ce20f7f7af58585f2ba9
 
 RUN apt-get update \
   && apt-get -y --allow-downgrades --fix-broken install \
