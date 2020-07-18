@@ -13,3 +13,30 @@ fetch_betting_odds <- function(start_date, end_date) {
       ~ stringr::str_to_lower(.) %>% stringr::str_replace_all(., "\\.", "_")
     )
 }
+
+
+#' Scrapes betting data for the latest round from a betting site.
+#' @importFrom magrittr %>%
+#' @param splash_host Hostname of the splash server to use
+#' @export
+scrape_betting_odds <- function(splash_host) {
+  betting_website <- "https://www.tab.com.au/sports/betting/AFL%20Football"
+  lua_filepath <- here::here("R", "betting-odds.lua")
+  lua_source <- readLines(lua_filepath) %>% paste(., collapse = "\n")
+  fields <- jsonlite::toJSON(
+    list(
+      lua_source = lua_source,
+      url = betting_website
+    ),
+    auto_unbox = TRUE
+  )
+
+  header <- c(`Content-Type`="application/json")
+
+  response <- RCurl::postForm(
+    paste0(splash_host, "/execute"),
+    .opts=list(httpheader = header, postfields=fields)
+  )
+
+  return(response)
+}

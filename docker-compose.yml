@@ -18,3 +18,7 @@ services:
     image: selenium/standalone-chrome:3.141.59
     ports:
       - "4444:4444"
+  splash:
+    image: scrapinghub/splash
+    ports:
+      - "8050:8050"

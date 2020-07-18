@@ -6,6 +6,8 @@ install.packages(
     "plumber",
     "wdman", # Required for RSelenium
     "RSelenium",
+    "here",
+    "RCurl",
     quiet = TRUE,
     verbose = FALSE
   ),
