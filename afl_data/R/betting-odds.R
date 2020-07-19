@@ -36,7 +36,13 @@ scrape_betting_odds <- function(splash_host) {
   response <- RCurl::postForm(
     paste0(splash_host, "/execute"),
     .opts=list(httpheader = header, postfields=fields)
-  )
+  ) %>%
+    jsonlite::fromJSON(.)
 
-  return(response)
+  # Lua returns a JSONified version of its table structure, which R
+  # has a difficult time with. This seems to be the easiest way to get it
+  # into the shape of a list of named lists
+  purrr::map(1:length(response), ~ unlist(response[[.x]])) %>%
+    tibble::tibble(data = .) %>%
+    tidyr::unnest_wider(data)
 }
