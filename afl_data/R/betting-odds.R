@@ -1,4 +1,4 @@
-#' Fetchest betting data via the fitzRoy package and filters by date range.
+#' Fetches betting data via the fitzRoy package and filters by date range.
 #' @importFrom magrittr %>%
 #' @param start_date Minimum match date for fetched data
 #' @param end_date Maximum match date for fetched data

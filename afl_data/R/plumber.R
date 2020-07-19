@@ -1,13 +1,13 @@
-source(paste0(getwd(), "/R/matches.R"))
-source(paste0(getwd(), "/R/players.R"))
-source(paste0(getwd(), "/R/betting-odds.R"))
-source(paste0(getwd(), "/R/fixtures.R"))
-source(paste0(getwd(), "/R/rosters.R"))
+source(here::here("R", "matches.R"))
+source(here::here("R", "players.R"))
+source(here::here("R", "betting-odds.R"))
+source(here::here("R", "fixtures.R"))
+source(here::here("R", "rosters.R"))
 
 FIRST_AFL_SEASON <- "1897-01-01"
 END_OF_YEAR <- paste0(lubridate::year(Sys.Date()), "-12-31")
-AFL_DOMAIN = "https://www.afl.com.au"
-TEAMS_PATH = "/matches/team-lineups"
+AFL_DOMAIN <- "https://www.afl.com.au"
+TEAMS_PATH <- "/matches/team-lineups"
 
 .is_production <- function() {
   PRODUCTION <- "production"
