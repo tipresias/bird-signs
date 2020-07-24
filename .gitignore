@@ -20,6 +20,8 @@ venv.bak/
 .Rproj.user
 .Rhistory
 packrat/lib*/
+*.Rcheck
+*_1.0.tar.gz
 
 # DB dumps
 *.sql
