@@ -21,3 +21,16 @@ deploy_rsa.enc
 
 # GCP files
 .gcloud
+
+# DB dumps
+*.sql
+
+# Travis CI files
+travis_wait_*.log
+
+# R stuff
+.Rproj.user
+.Rhistory
+packrat/lib*/
+*.Rcheck
+*_1.0.tar.gz

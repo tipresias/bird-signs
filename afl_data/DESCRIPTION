@@ -18,9 +18,12 @@ Imports:
     RSelenium,
     wdman,
     dplyr,
+    here,
+    jsonlite,
     lubridate,
     magrittr,
     purrr,
+    RCurl,
     stringr,
     tibble,
     tidyr,
@@ -30,4 +33,4 @@ Suggests:
     testthat,
 Remotes:
     git@github.com:jimmyday12/fitzRoy.git,
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1

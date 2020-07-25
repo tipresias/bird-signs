@@ -2,7 +2,7 @@
 % Please edit documentation in R/betting-odds.R
 \name{fetch_betting_odds}
 \alias{fetch_betting_odds}
-\title{Fetchest betting data via the fitzRoy package and filters by date range.}
+\title{Fetches betting data via the fitzRoy package and filters by date range.}
 \usage{
 fetch_betting_odds(start_date, end_date)
 }
@@ -12,5 +12,5 @@ fetch_betting_odds(start_date, end_date)
 \item{end_date}{Maximum match date for fetched data}
 }
 \description{
-Fetchest betting data via the fitzRoy package and filters by date range.
+Fetches betting data via the fitzRoy package and filters by date range.
 }
