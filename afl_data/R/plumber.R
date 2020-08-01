@@ -46,6 +46,15 @@ function(start_date = FIRST_AFL_SEASON, end_date = Sys.Date()) {
     list(data = .)
 }
 
+#' Return match results data without in-game stats. Current season only
+#' (for earlier seasons use the /matches endpoint).
+#' @importFrom magrittr %>%
+#' @param round_number Fetch matches from the given round
+#' @get /match_results
+function(round_number = NULL) {
+  fetch_match_results(round_number) %>% list(data = .)
+}
+
 #' Return player data
 #' @importFrom magrittr %>%
 #' @param start_date Minimum match date for fetched data
