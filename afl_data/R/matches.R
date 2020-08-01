@@ -18,7 +18,7 @@ fetch_match_results <- function(round_number) {
   squiggle_api <- "https://api.squiggle.com.au"
   year <- lubridate::now() %>% lubridate::year(.)
   round_param <- ifelse(is.null(round_number), "", paste0(";round=", round_number))
-  url <- paste0(squiggle_api, "/?q=games;year=", year)
+  url <- paste0(squiggle_api, "/?q=games;year=", year, round_param)
 
   RCurl::getURL(url) %>% jsonlite::fromJSON(.) %>% .$games
 }
