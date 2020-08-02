@@ -123,7 +123,7 @@ scrape_betting_odds <- function(splash_host) {
   )
 
   if (length(raw_betting_data) == 0) {
-    return(raw_betting_data)
+    return(NULL)
   }
 
   betting_data <- .clean_betting_data(raw_betting_data)

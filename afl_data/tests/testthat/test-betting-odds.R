@@ -4,11 +4,9 @@ describe("scrape_betting_odds()", {
   it("returns a data frame with the correct columns or empty list", {
     betting_data <- scrape_betting_odds(splash_host)
 
-    # Sometimes the roster page is blank, so we have to accept an empty list
-    # as a legitimate result
-    if (length(betting_data) == 0) {
-      expect_true("list" %in% class(betting_data))
-    } else {
+    # In the off-season, there won't be any betting odds, so we have to accept
+    # NULL as a valid value
+    if (!is.null(betting_data)) {
       expect_true("data.frame" %in% class(betting_data))
 
       expect_type(betting_data$date, "double")
