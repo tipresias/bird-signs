@@ -112,15 +112,7 @@ fetch_betting_odds <- function(start_date, end_date) {
 #' @param splash_host Hostname of the splash server to use
 #' @export
 scrape_betting_odds <- function(splash_host) {
-  raw_betting_data <- tryCatch(
-    {
-      .fetch_raw_odds_data(splash_host)
-    },
-    error = function(cond) {
-      message(cond)
-      list()
-    }
-  )
+  raw_betting_data <- .fetch_raw_odds_data(splash_host)
 
   if (length(raw_betting_data) == 0) {
     return(NULL)
