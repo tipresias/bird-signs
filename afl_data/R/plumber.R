@@ -78,16 +78,35 @@ function(
   fallback_for_upcoming_round = FALSE
 ) {
   betting_data <- fetch_betting_odds(start_date, end_date)
-  is_empty <- length(betting_data) == 0 || nrow(betting_data) == 0
 
-  if (is_empty && as.logical(fallback_for_upcoming_round)) {
+  if (nrow(betting_data) > 0) {
+    future_matches <- betting_data %>%
+      dplyr::filter(., date >= lubridate::now())
+  } else {
+    future_matches <- NULL
+  }
+
+  future_is_empty <- is.null(future_matches) || nrow(future_matches) == 0
+
+  print(is.null(future_matches))
+  print((nrow(future_matches) == 0))
+  print(future_is_empty)
+  print(as.logical(fallback_for_upcoming_round))
+
+  if (future_is_empty && as.logical(fallback_for_upcoming_round)) {
     splash_host <- ifelse(
       .is_production(),
       Sys.getenv("SPLASH_SERVICE"),
       "http://splash:8050"
     )
 
-    betting_data <- scrape_betting_odds(splash_host)
+    latest_betting_data <- scrape_betting_odds(splash_host)
+
+    if (!is.null(latest_betting_data)) {
+      return(
+        dplyr::bind_rows(betting_data, latest_betting_data) %>% list(data= .)
+      )
+    }
   }
 
   betting_data %>% list(data = .)

@@ -2,15 +2,13 @@
 % Please edit documentation in R/matches.R
 \name{fetch_match_results}
 \alias{fetch_match_results}
-\title{Fetches match data via the fitzRoy package and filters by date range.}
+\title{Fetch match results data from the Squiggle API.}
 \usage{
-fetch_match_results(start_date, end_date)
+fetch_match_results(round_number)
 }
 \arguments{
-\item{start_date}{Minimum match date for fetched data}
-
-\item{end_date}{Maximum match date for fetched data}
+\item{round_number}{Fetch matches from the given round}
 }
 \description{
-Fetches match data via the fitzRoy package and filters by date range.
+Fetch match results data from the Squiggle API.
 }

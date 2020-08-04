@@ -112,22 +112,17 @@ fetch_betting_odds <- function(start_date, end_date) {
 #' @param splash_host Hostname of the splash server to use
 #' @export
 scrape_betting_odds <- function(splash_host) {
-  raw_betting_data <- tryCatch(
-    {
-      .fetch_raw_odds_data(splash_host)
-    },
-    error = function(cond) {
-      message(cond)
-      list()
-    }
-  )
+  raw_betting_data <- .fetch_raw_odds_data(splash_host)
 
   if (length(raw_betting_data) == 0) {
-    return(raw_betting_data)
+    return(NULL)
   }
 
   betting_data <- .clean_betting_data(raw_betting_data)
   fixture_data <- .fetch_fixture_data()
 
-  .append_match_cols_to_betting_data(betting_data, fixture_data)
+  .append_match_cols_to_betting_data(betting_data, fixture_data) %>%
+    dplyr::rename_all(
+      ~ stringr::str_to_lower(.) %>% stringr::str_replace_all(., "\\.", "_")
+    )
 }

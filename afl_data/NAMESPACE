@@ -3,6 +3,7 @@
 export(fetch_betting_odds)
 export(fetch_fixtures)
 export(fetch_match_results)
+export(fetch_matches)
 export(fetch_player_results)
 export(fetch_rosters)
 export(scrape_betting_odds)
