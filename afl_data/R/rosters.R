@@ -7,10 +7,12 @@ PLAYER_COL_NAMES = c(
   "match_id"
 )
 
+HOME_AWAY <- c("home", "away")
+
 
 .parse_date_time <- function(date_time_string) {
   lubridate::parse_date_time(
-    date_time_string, "%A %b %d %I:%M %p %y",
+    date_time_string, "%A %b %d %I:%M %p",
     quiet = TRUE
   ) %>%
     # afl.com.au must detect timezone via the browser to display the match times
@@ -25,12 +27,16 @@ PLAYER_COL_NAMES = c(
 .clean_data_frame <- function(roster_df) {
   roster_df %>%
     dplyr::mutate_all(., as.character) %>%
+    tidyr::unite("date", c("date", "time"), remove = TRUE, sep = " ") %>%
     dplyr::mutate(
       .,
+      player_name = stringr::str_extract(player_name, "[:alpha:]+(?:[:blank:][:alpha:]+)+"),
+      # We assume that we only scrape rosters for matches from this year,
+      # because any data from past matches are better retrieved from AFL Tables.
       date = .parse_date_time(date),
-      round_number = as.numeric(round_number)
-    ) %>%
-    dplyr::mutate(., season = lubridate::year(date))
+      round_number = as.numeric(round_number),
+      season = lubridate::year(date)
+    )
 }
 
 
@@ -47,8 +53,22 @@ PLAYER_COL_NAMES = c(
 }
 
 
-.parse_team_data <- function(match_roster_element, team_type) {
-  team_name <- match_roster_element$findChildElement(
+.convert_to_data_frame <- function(matches) {
+  matches %>%
+  dplyr::bind_rows(.) %>%
+  tidyr::pivot_wider(
+    .,
+    id_cols = c(player_name, playing_for, date, time, match_id),
+    names_from = team_type,
+    values_from = team
+  ) %>%
+  tidyr::fill(., tidyselect::all_of(HOME_AWAY), .direction = "downup") %>%
+  dplyr::rename(., home_team = home, away_team = away)
+}
+
+
+.parse_team_data <- function(match_element, team_type) {
+  team_name <- match_element$findChildElement(
     using = "css",
     value = paste0(".team-lineups__team-name--", team_type)
   )$getElementText() %>%
@@ -58,76 +78,70 @@ PLAYER_COL_NAMES = c(
   # to differentiate between team types, but for player containers,
   # they use "--home" and a blank suffix indicates 'away'
   player_team_type <- if(team_type == "home") "--home" else ""
-  team_roster <- match_roster_element$findChildElements(
+
+  team_roster <- match_element$findChildElements(
     using = "css",
     value = paste0(".team-lineups__positions-players-container", player_team_type, " .team-lineups__player")
   ) %>%
     purrr::map(., ~ .x$getElementText()) %>%
-    unlist %>%
-    stringr::str_extract(., "[:alpha:]+(?:[:blank:][:alpha:]+)+")
+    unlist
 
   tibble::tibble(
     player_name = team_roster,
     playing_for = rep_len(team_name, length(team_roster)),
-    team_type = rep_len(team_type, length(team_roster))
+    team_type = rep_len(team_type, length(team_roster)),
+    round_number = rep_len(round_number, length(team_roster))
   ) %>%
     dplyr::mutate(team = playing_for)
 }
 
-.parse_match_data <- function(index, match_date_time, match_roster_element) {
-  HOME_AWAY <- c("home", "away")
-  # We assume that we only scrape rosters for matches from this year,
-  # because any data from past matches are better retrieved from AFL Tables.
-  this_year <- lubridate::today() %>% lubridate::year(.)
+.parse_match_elements <- function(cumulative_roster_data, match_element) {
+  DATE_CLASS <- "match-list__group-date"
+  TIME_CLASS <- "match-list-alt__header-time"
 
-  purrr::map(HOME_AWAY, ~ .parse_team_data(match_roster_element, .)) %>%
-    dplyr::bind_rows(.) %>%
-    tidyr::pivot_wider(
-      .,
-      id_cols = c(player_name, playing_for),
-      names_from = team_type,
-      values_from = team
-    ) %>%
-    tidyr::fill(., tidyselect::all_of(HOME_AWAY), .direction = "downup") %>%
-    dplyr::rename(., home_team = home, away_team = away) %>%
-    dplyr::mutate(
-      .,
-      match_id = rep_len(index, nrow(.)),
-      date = rep_len(paste(paste(match_date_time, collapse = " "), this_year), nrow(.))
-    )
+  roster_data = rlang::duplicate(cumulative_roster_data)
+
+  element_class <- match_element$getElementAttribute("class")
+
+  if (element_class == DATE_CLASS) {
+    roster_data$current_date <- match_element$getElementText() %>% unlist
+    return(roster_data)
+  }
+
+  if (element_class == TIME_CLASS) {
+    roster_data$current_time <- match_element$getElementText() %>% unlist
+    return(roster_data)
+  }
+
+  current_date <- cumulative_roster_data$current_date
+  current_time <- cumulative_roster_data$current_time
+  match_id <- cumulative_roster_data$match_id
+
+  current_roster_data <- purrr::map(
+    HOME_AWAY, ~ .parse_team_data(match_element, .)
+  ) %>%
+    purrr::map(., ~ dplyr::mutate(
+      .x,
+      date = current_date,
+      time = current_time,
+      match_id = match_id
+    ))
+
+  roster_data$roster_data <- c(roster_data$roster_data, current_roster_data)
+  roster_data$match_id <- match_id + 1
+
+  return(roster_data)
 }
 
-.collect_team_rosters <- function(browser) {
+.collect_match_elements <- function(browser) {
   match_roster_elements <- browser$findElements(
-    using = "css", value = ".team-lineups__wrapper"
+    using = "css",
+    value = ".match-list__group-date, .match-list-alt__header-time, .team-lineups__wrapper"
   )
 
   stopifnot(length(match_roster_elements) > 0)
 
-  match_indices <- 1:length(match_roster_elements)
-
-  match_date_times <- browser$findElements(
-    using = "css",
-    value = ".match-list__group-date, .match-list-alt__header-time"
-  ) %>%
-    purrr::map(~ .x$getElementText()) %>%
-    unlist %>%
-    dplyr::bind_cols(
-      date_time = .,
-      label = ifelse(grepl("PM|AM", .), "time", "date"),
-      # Need column of unique IDs or else pivot_wider blows up
-      id = 1:length(.)
-    ) %>%
-    tidyr::pivot_wider(names_from = label, values_from = date_time) %>%
-    # Dates are displayed per match day and times per match, so we need
-    # to fill in the missing dates for matches after the first of the day.
-    tidyr::fill(date) %>%
-    dplyr::filter(!is.na(time)) %>%
-    dplyr::select(c(date, time)) %>%
-    purrr::transpose(.)
-
-
-  list(match_indices, match_date_times, match_roster_elements)
+  match_roster_elements
 }
 
 .expand_roster_elements <- function(expandable_roster_elements) {
@@ -184,9 +198,10 @@ fetch_rosters <- function(browser) {
 
   .expand_roster_elements(expandable_roster_elements)
 
-  .collect_team_rosters(browser) %>%
-    purrr::pmap(.parse_match_data) %>%
-    dplyr::bind_rows(.) %>%
+  .collect_match_elements(browser) %>%
+    purrr::reduce(.parse_match_elements, .init = list(match_id = 1)) %>%
+    .$roster_data %>%
+    .convert_to_data_frame(.) %>%
     dplyr::mutate(., round_number = .get_round_number(browser)) %>%
     .clean_data_frame(.)
 }

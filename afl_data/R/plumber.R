@@ -150,7 +150,8 @@ function(round_number = NULL) {
   tryCatch({
     browser$open()
 
-    browser$navigate(paste0(AFL_DOMAIN, TEAMS_PATH, "?GameWeeks=", round_number))
+    query_param <- if (is.null(round_number)) "" else paste0("?GameWeeks=", round_number)
+    browser$navigate(paste0(AFL_DOMAIN, TEAMS_PATH, query_param))
     roster_data <- fetch_rosters(browser) %>% list(data = .)
   }, finally = {
     browser$close()
