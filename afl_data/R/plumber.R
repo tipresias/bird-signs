@@ -122,39 +122,12 @@ function(start_date = FIRST_AFL_SEASON, end_date = END_OF_YEAR) {
     list(data = .)
 }
 
-#' Return team rosters for a given round (current season only)
+#' Return team rosters for the current round.
 #' @importFrom magrittr %>%
-#' @param round_number Fetch the rosters from this round. Note that missing param defaults to current round
+#' @param round_number Fetch the rosters from this round. Serves as a check
+#'  to make sure available roster data matches the requested round.
+#'  Leave blank to accept whatever the current round is.
 #' @get /rosters
 function(round_number = NULL) {
-  server_address <- "browser"
-  port <- 4444L
-
-  browser <- RSelenium::remoteDriver(
-    remoteServerAddr = server_address,
-    browser = 'chrome',
-    port = port,
-    extraCapabilities = list(
-      "goog:chromeOptions" = list(
-        args = list(
-          "--headless",
-          "--no-sandbox",
-          "--disable-gpu",
-          "--disable-dev-shm-usage",
-          "window-size=1024,768"
-        )
-      )
-    )
-  )
-
-  tryCatch({
-    browser$open()
-
-    query_param <- if (is.null(round_number)) "" else paste0("?GameWeeks=", round_number)
-    browser$navigate(paste0(AFL_DOMAIN, TEAMS_PATH, query_param))
-    roster_data <- fetch_rosters(browser) %>% list(data = .)
-  }, finally = {
-    browser$close()
-    browser$closeServer()
-  })
+  fetch_rosters(round_number) %>% list(data = .)
 }

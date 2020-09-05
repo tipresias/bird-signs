@@ -1,4 +1,6 @@
-PLAYER_COL_NAMES = c(
+ROSTER_URL <- "https://www.footywire.com/afl/footy/afl_team_selections"
+
+PLAYER_COL_NAMES <- c(
   "player_name",
   "playing_for",
   "home_team",
@@ -133,11 +135,9 @@ HOME_AWAY <- c("home", "away")
   return(roster_data)
 }
 
-.collect_match_elements <- function(browser) {
-  match_roster_elements <- browser$findElements(
-    using = "css",
-    value = ".match-list__group-date, .match-list-alt__header-time, .team-lineups__wrapper"
-  )
+.collect_match_elements <- function(page) {
+  match_roster_elements <- page %>%
+    rvest::html_nodes("table[align='CENTER']")
 
   stopifnot(length(match_roster_elements) > 0)
 
@@ -185,20 +185,22 @@ HOME_AWAY <- c("home", "away")
 #' Scrapes team roster data (i.e. which players are playing for each team) for
 #' a given round from afl.com.au, cleans it, and returns it as a dataframe.
 #' @importFrom magrittr %>%
-#' @param browser Selenium browser object for navigating to pages and crawling the DOM.
+#' @param round_number Fetch the rosters from this round. Serves as a check to make sure available roster data matches the requested round.
 #' @export
-fetch_rosters <- function(browser) {
-  expandable_roster_elements <- .find_expandable_roster_elements(browser)
+fetch_rosters <- function(round_number) {
+  roster_page <- xml2::read_html(ROSTER_URL)
+  roster_round_number <- roster_page %>%
+    rvest::html_node("h1.centertitle") %>%
+    rvest::html_text() %>%
+    stringr::str_match(., "Round (\\d+)") %>%
+    .[[2]] %>%
+    as.numeric(.)
 
-  # If we can't find anything, we're probably trying to get rosters for a round
-  # for which they haven't been announced yet.
-  if (length(expandable_roster_elements) == 0) {
-    return(expandable_roster_elements)
+  if (!is.null(round_number) && roster_round_number != as.numeric(round_number)) {
+    return(list())
   }
 
-  .expand_roster_elements(expandable_roster_elements)
-
-  .collect_match_elements(browser) %>%
+  .collect_match_elements() %>%
     purrr::reduce(.parse_match_elements, .init = list(match_id = 1)) %>%
     .$roster_data %>%
     .convert_to_data_frame(.) %>%
