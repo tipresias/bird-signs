@@ -22,10 +22,12 @@ Imports:
     magrittr,
     purrr,
     RCurl,
+    rvest,
     stringr,
     tibble,
     tidyr,
     tidyselect,
+    xml2,
 Suggests:
     roxygen2,
     testthat,

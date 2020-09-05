@@ -5,10 +5,10 @@
 \title{Scrapes team roster data (i.e. which players are playing for each team) for
 a given round from afl.com.au, cleans it, and returns it as a dataframe.}
 \usage{
-fetch_rosters(browser)
+fetch_rosters(round_number)
 }
 \arguments{
-\item{browser}{Selenium browser object for navigating to pages and crawling the DOM.}
+\item{round_number}{Fetch the rosters from this round. Serves as a check to make sure available roster data matches the requested round.}
 }
 \description{
 Scrapes team roster data (i.e. which players are playing for each team) for
