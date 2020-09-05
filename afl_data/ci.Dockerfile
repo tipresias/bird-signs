@@ -4,12 +4,6 @@
 # the image from scratch every time.
 FROM rocker/tidyverse:4.0.2@sha256:cbc4ee809d594f0f6765be1d0fa046f48dfcda7340b5830473dd28fc71940c3c
 
-RUN apt-get update \
-  && apt-get -y --allow-downgrades --fix-broken install \
-  # The following needed for RSelenium
-  default-jre \
-  lbzip2
-
 WORKDIR /app/afl_data
 
 COPY init.R ./

@@ -15,8 +15,6 @@ Imports:
     fitzRoy,
     future,
     plumber,
-    RSelenium,
-    wdman,
     dplyr,
     here,
     jsonlite,

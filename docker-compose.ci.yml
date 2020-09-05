@@ -2,17 +2,11 @@ version: "3.2"
 services:
   app:
     image: cfranklin11/tipresias_afl_data:latest
-    depends_on:
-      - browser
     environment:
       - R_ENV=development
     ports:
       - "8080:8080"
     command: Rscript app.R
-  browser:
-    image: selenium/standalone-chrome:3.141.59
-    ports:
-      - "4444:4444"
   splash:
     image: scrapinghub/splash
     ports:

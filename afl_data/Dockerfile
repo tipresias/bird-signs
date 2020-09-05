@@ -1,11 +1,5 @@
 FROM rocker/tidyverse:4.0.2
 
-RUN apt-get update \
-  && apt-get -y --allow-downgrades --fix-broken install \
-  # The following needed for RSelenium
-  default-jre \
-  lbzip2
-
 WORKDIR /app/afl_data
 
 COPY init.R ./

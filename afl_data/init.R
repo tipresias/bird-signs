@@ -4,8 +4,6 @@ install.packages(
   c(
     "future",
     "plumber",
-    "wdman", # Required for RSelenium
-    "RSelenium",
     "here",
     "RCurl",
     quiet = TRUE,

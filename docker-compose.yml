@@ -4,8 +4,6 @@ services:
     build: ./afl_data
     volumes:
       - ./afl_data:/app/afl_data
-    depends_on:
-      - browser
     env_file: .env
     environment:
       - R_ENV=development
@@ -14,10 +12,6 @@ services:
     stdin_open: true
     tty: true
     command: Rscript app.R
-  browser:
-    image: selenium/standalone-chrome:3.141.59
-    ports:
-      - "4444:4444"
   splash:
     image: scrapinghub/splash
     ports:
