@@ -150,10 +150,20 @@ fetch_rosters <- function(round_number) {
     return(list())
   }
 
-  .collect_match_elements(roster_page) %>%
+  fixture <- fitzRoy::get_fixture() %>%
+    dplyr::select(c('Date', 'Home.Team', 'Away.Team', 'Round')) %>%
+    dplyr::rename(
+      date = Date,
+      home_team = Home.Team,
+      away_team = Away.Team,
+      round_number = Round
+    )
+
+  rosters <- .collect_match_elements(roster_page) %>%
     purrr::imap(.parse_match_element) %>%
     dplyr::bind_rows(.) %>%
     .pivot_data_frame(.) %>%
     dplyr::mutate(., round_number = roster_round_number) %>%
-    .clean_data_frame(.)
+    .clean_data_frame(.) %>%
+    dplyr::inner_join(fixture, by = c('round_number', 'home_team', 'away_team'))
 }
