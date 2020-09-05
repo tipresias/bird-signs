@@ -4,6 +4,7 @@ services:
     image: cfranklin11/tipresias_afl_data:latest
     environment:
       - R_ENV=development
+      - CI=true
     ports:
       - "8080:8080"
     command: Rscript app.R
