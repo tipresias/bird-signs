@@ -7,7 +7,6 @@ before_script:
   - travis_wait 30 docker build --cache-from cfranklin11/tipresias_afl_data:latest -t cfranklin11/tipresias_afl_data:latest -f ./afl_data/ci.Dockerfile ./afl_data
 script:
   - docker-compose -f docker-compose.ci.yml up -d
-  - ./scripts/wait-for-it.sh localhost:4444 -- echo "Selenium ready"
   - ./scripts/wait-for-it.sh localhost:8050 -- echo "Splash ready"
   - docker-compose -f docker-compose.ci.yml run app Rscript -e "devtools::check(check_dir = '.')"
 before_deploy:
