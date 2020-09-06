@@ -1,9 +1,9 @@
 version: "3.2"
 services:
   app:
-    build: ./afl_data
+    build: .
     volumes:
-      - ./afl_data:/app/afl_data
+      - ./afl_data:/app
     env_file: .env
     environment:
       - R_ENV=development

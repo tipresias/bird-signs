@@ -21,6 +21,7 @@ deploy_rsa.enc
 
 # GCP files
 .gcloud
+keyfile.json
 
 # DB dumps
 *.sql
@@ -31,6 +32,7 @@ travis_wait_*.log
 # R stuff
 .Rproj.user
 .Rhistory
+.Rprofile
 packrat/lib*/
 *.Rcheck
 *_1.0.tar.gz
