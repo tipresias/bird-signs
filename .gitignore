@@ -13,8 +13,9 @@ venv.bak/
 .env.development.local
 .env.test.local
 .env.production.local
-
+*_rsa
 .vscode
+secrets.tar
 
 # R stuff
 .Rproj.user
@@ -29,6 +30,7 @@ packrat/lib*/
 
 # GCP files
 .gcloud
+keyfile.json
 
 # Travis CI files
 travis_wait_*.log
