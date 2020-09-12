@@ -25,10 +25,10 @@ The AFL data API for the Tipresias app and related data-science services
 
 ### Deploy
 
-- Deploy app to DigitalOcean:
+- Deploy app to Google Cloud Run:
 
   - Merge a pull request into `main`
   - Manually trigger a deploy:
     - In the Travis dashboard, navigate to the tipresias repository.
     - Under 'More Options', trigger a build on `main`.
-    - This will build the image, run tests, and deploy to DigitalOcean.
+    - This will build the image, run tests, and deploy to Google Cloud Run.
