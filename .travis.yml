@@ -14,11 +14,8 @@ script:
   - docker-compose -f docker-compose.ci.yml run app Rscript -e "devtools::check(check_dir = '.')"
 before_deploy:
   # Set up authentication
-  - openssl aes-256-cbc -K $encrypted_3b9f0b9d36d1_key -iv $encrypted_3b9f0b9d36d1_iv -in secrets.tar.enc -out secrets.tar -d
-  - tar xvf secrets.tar
+  - openssl aes-256-cbc -K $encrypted_241002f0ef4b_key -iv $encrypted_241002f0ef4b_iv -in keyfile.json.enc -out keyfile.json -d
   - mkdir ${PWD}/.gcloud && mv keyfile.json ${GOOGLE_APPLICATION_CREDENTIALS}
-  - mv deploy_rsa ${HOME}/.ssh/deploy_rsa
-  - ssh-keyscan -H ${IP_ADDRESS} >> ${HOME}/.ssh/known_hosts
   - echo "$DOCKER_PASSWORD" | docker login -u cfranklin11 --password-stdin
   # Push image
   - docker push cfranklin11/tipresias_afl_data:latest
