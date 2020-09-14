@@ -88,11 +88,6 @@ function(
 
   future_is_empty <- is.null(future_matches) || nrow(future_matches) == 0
 
-  print(is.null(future_matches))
-  print((nrow(future_matches) == 0))
-  print(future_is_empty)
-  print(as.logical(fallback_for_upcoming_round))
-
   if (future_is_empty && as.logical(fallback_for_upcoming_round)) {
     splash_host <- ifelse(
       .is_production(),
