@@ -122,6 +122,7 @@ scrape_betting_odds <- function(splash_host) {
   fixture_data <- .fetch_fixture_data()
 
   .append_match_cols_to_betting_data(betting_data, fixture_data) %>%
+    dplyr::mutate(Date = lubridate::as_date(Date)) %>%
     dplyr::rename_all(
       ~ stringr::str_to_lower(.) %>% stringr::str_replace_all(., "\\.", "_")
     )
