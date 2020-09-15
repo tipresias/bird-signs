@@ -8,9 +8,3 @@ services:
     ports:
       - "8080:8080"
     command: Rscript app.R
-  splash:
-    image: scrapinghub/splash
-    ports:
-      - "8050:8050"
-    # String matching functions aren't available in sandbox mode for some reason
-    command: --disable-lua-sandbox

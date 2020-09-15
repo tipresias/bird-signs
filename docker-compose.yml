@@ -12,9 +12,3 @@ services:
     stdin_open: true
     tty: true
     command: Rscript app.R
-  splash:
-    image: scrapinghub/splash
-    ports:
-      - "8050:8050"
-    # String matching functions aren't available in sandbox mode for some reason
-    command: --disable-lua-sandbox
