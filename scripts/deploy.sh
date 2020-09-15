@@ -17,7 +17,6 @@ fi
 GOOGLE_ENV_VARS="
 GCR_TOKEN=${GCR_TOKEN},\
 R_ENV=production,\
-SPLASH_SERVICE=${SPLASH_SERVICE}
 "
 
 gcloud beta run deploy bird-signs \

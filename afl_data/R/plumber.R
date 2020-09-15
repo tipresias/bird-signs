@@ -69,42 +69,9 @@ function(start_date = FIRST_AFL_SEASON, end_date = Sys.Date()) {
 #' @importFrom magrittr %>%
 #' @param start_date Minimum match date for fetched data
 #' @param end_date Maximum match date for fetched data
-#' @param fallback_for_upcoming_round Whether to scrape a betting site
-#'  in the case of missing data
 #' @get /betting_odds
-function(
-  start_date = FIRST_AFL_SEASON,
-  end_date = Sys.Date(),
-  fallback_for_upcoming_round = FALSE
-) {
-  betting_data <- fetch_betting_odds(start_date, end_date)
-
-  if (nrow(betting_data) > 0) {
-    future_matches <- betting_data %>%
-      dplyr::filter(., date >= lubridate::now())
-  } else {
-    future_matches <- NULL
-  }
-
-  future_is_empty <- is.null(future_matches) || nrow(future_matches) == 0
-
-  if (future_is_empty && as.logical(fallback_for_upcoming_round)) {
-    splash_host <- ifelse(
-      .is_production(),
-      Sys.getenv("SPLASH_SERVICE"),
-      "http://splash:8050"
-    )
-
-    latest_betting_data <- scrape_betting_odds(splash_host)
-
-    if (!is.null(latest_betting_data)) {
-      return(
-        dplyr::bind_rows(betting_data, latest_betting_data) %>% list(data= .)
-      )
-    }
-  }
-
-  betting_data %>% list(data = .)
+function(start_date = FIRST_AFL_SEASON, end_date = Sys.Date()) {
+  fetch_betting_odds(start_date, end_date) %>% list(data = .)
 }
 
 #' Return fixture data (match data without results)
