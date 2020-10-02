@@ -1,4 +1,5 @@
 ROSTER_URL <- "https://www.footywire.com/afl/footy/afl_team_selections"
+FIXTURE_URL <- "https://www.footywire.com/afl/footy/ft_match_list"
 
 PLAYER_COL_NAMES <- c(
   "player_name",
@@ -24,12 +25,32 @@ HOME_AWAY <- c("home", "away")
 
 
 .get_round_number <- function(roster_page) {
-  roster_page %>%
+  round_label <- roster_page %>%
     rvest::html_node("h1.centertitle") %>%
-    rvest::html_text() %>%
+    rvest::html_text()
+
+  round_number <- round_label %>%
     stringr::str_match(., "Round (\\d+)") %>%
     .[[2]] %>%
     as.numeric(.)
+
+  if (!is.na(round_number)) {
+    return(round_number)
+  }
+
+  max_regular_round <- xml2::read_html(FIXTURE_URL) %>%
+    rvest::html_nodes(".tbtitle") %>%
+    rvest::html_text() %>%
+    purrr::map(~ stringr::str_match(.x, "Round (\\d+)") %>% .[[2]] %>% as.numeric) %>%
+    unlist() %>%
+    max(., na.rm = TRUE)
+
+  finals_week <- round_label %>%
+    stringr::str_match("Finals Week (\\d+)") %>%
+    .[[2]] %>%
+    as.numeric()
+
+  max_regular_round + finals_week
 }
 
 
@@ -138,15 +159,19 @@ HOME_AWAY <- c("home", "away")
 #' Scrapes team roster data (i.e. which players are playing for each team) for
 #' a given round from afl.com.au, cleans it, and returns it as a dataframe.
 #' @importFrom magrittr %>%
-#' @param round_number Fetch the rosters from this round. Serves as a check to make sure available roster data matches the requested round.
+#' @param round_number Fetch the rosters from this round. Required,
+#'  because it is assigned to the round_number column of the returned data set.
 #' @export
 fetch_rosters <- function(round_number) {
   roster_page <- xml2::read_html(ROSTER_URL)
   roster_round_number <- .get_round_number(roster_page)
 
   # If we have mismatched round numbers, it means that the roster page
-  # hasn't been updated for the upcoming round yet
-  if (!is.null(round_number) && roster_round_number != as.numeric(round_number)) {
+  # hasn't been updated for the upcoming round yet.
+  round_numbers_dont_match <- !is.null(round_number) &&
+    roster_round_number != as.numeric(round_number)
+
+  if (round_numbers_dont_match) {
     return(list())
   }
 
