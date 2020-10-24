@@ -34,8 +34,8 @@ HOME_AWAY <- c("home", "away")
     .[[2]] %>%
     as.numeric(.)
 
-  if (!is.na(round_number)) {
-    return(round_number)
+  if (is.na(round_number)) {
+    return(NULL)
   }
 
   max_regular_round <- xml2::read_html(FIXTURE_URL) %>%
@@ -164,16 +164,27 @@ HOME_AWAY <- c("home", "away")
 #' @export
 fetch_rosters <- function(round_number) {
   roster_page <- xml2::read_html(ROSTER_URL)
-  roster_round_number <- .get_round_number(roster_page)
+  page_round_number <- .get_round_number(roster_page)
 
   # If we have mismatched round numbers, it means that the roster page
   # hasn't been updated for the upcoming round yet.
-  round_numbers_dont_match <- !is.null(round_number) &&
-    roster_round_number != as.numeric(round_number)
+  round_numbers_match <- is.null(round_number) ||
+    # If roster_round_number is NULL, it means that the page is using
+    # some finals round label that we can't parse for a round number,
+    # so we just shrug and hope it's been updated for the current round.
+    is.null(page_round_number) ||
+    page_round_number == as.numeric(round_number)
 
-  if (round_numbers_dont_match) {
+  roster_round_number <- if (is.null(page_round_number)) {
+    if (is.null(round_number)) 0 else round_number
+  } else {
+    page_round_number
+  }
+
+  if (!round_numbers_match || is.null(roster_round_number)) {
     return(list())
   }
+
 
   fixture <- fitzRoy::get_fixture() %>%
     dplyr::select(c('Date', 'Home.Team', 'Away.Team', 'Round')) %>%
