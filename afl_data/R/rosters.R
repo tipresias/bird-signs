@@ -34,8 +34,8 @@ HOME_AWAY <- c("home", "away")
     .[[2]] %>%
     as.numeric(.)
 
-  if (!is.na(round_number)) {
-    return(round_number)
+  if (is.na(round_number)) {
+    return(NULL)
   }
 
   max_regular_round <- xml2::read_html(FIXTURE_URL) %>%
