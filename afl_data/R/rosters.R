@@ -168,10 +168,14 @@ fetch_rosters <- function(round_number) {
 
   # If we have mismatched round numbers, it means that the roster page
   # hasn't been updated for the upcoming round yet.
-  round_numbers_dont_match <- !is.null(round_number) &&
-    roster_round_number != as.numeric(round_number)
+  round_numbers_match <- is.null(round_number) ||
+    # If roster_round_number is NULL, it means that the page is using
+    # some finals round label that we can't parse for a round number,
+    # so we just shrug and hope it's been updated for the current round.
+    is.null(roster_round_number) ||
+    roster_round_number == as.numeric(round_number)
 
-  if (round_numbers_dont_match) {
+  if (!round_numbers_match) {
     return(list())
   }
 
