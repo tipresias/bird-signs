@@ -1,0 +1,43 @@
+name: build
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Build image
+        run: |
+          docker pull cfranklin11/tipresias_afl_data:latest
+          docker build --cache-from cfranklin11/tipresias_afl_data:latest \
+            -t cfranklin11/tipresias_afl_data:latest \
+            -f ./ci.Dockerfile .
+      - name: Run check/tests
+        if: ${{ always() }}
+        run: |
+          docker-compose -f docker-compose.ci.yml up -d
+          ./scripts/wait-for-it.sh localhost:8050 -- echo "Splash ready"
+          docker-compose -f docker-compose.ci.yml run app \
+            Rscript -e "devtools::check(check_dir = '.')"
+      - name: Login to Docker Hub
+        if: ${{ github.ref == 'refs/heads/main' }}
+        uses: docker/login-action@v1
+        with:
+          username: cfranklin11
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Push updated images
+        if: ${{ github.ref == 'refs/heads/main' }}
+        run: |
+          docker push cfranklin11/tipresias_data_science:latest
+      - name: Set up Google Cloud SDK
+        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          project_id: ${{ secrets.PROJECT_ID }}
+          service_account_key: ${{ secrets.GC_SA_KEY }}
+      - name: Deploy
+        if: ${{ github.ref == 'refs/heads/main' }}
+        env:
+          GCR_TOKEN: ${{ secrets.GCR_TOKEN }}
+        run: ./scripts/deploy.sh
