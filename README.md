@@ -1,6 +1,6 @@
 # Bird Signs
 
-[![Build Status](https://travis-ci.com/tipresias/bird-signs.svg?branch=main)](https://travis-ci.com/tipresias/bird-signs)
+![build](https://github.com/tipresias/bird-signs/workflows/build/badge.svg)
 
 The AFL data API for the Tipresias app and related data-science services
 

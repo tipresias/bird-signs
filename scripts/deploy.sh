@@ -5,14 +5,7 @@ set -euo pipefail
 DOCKER_COMPOSE_FILE=/var/www/bird_signs/docker-compose.yml
 PORT=8080
 
-# We need travis_wait for Travis CI builds, because installing R packages takes forever.
-# On a local machine, we can just build & deploy as normal.
-if [ -n "$(LC_ALL=C type -t travis_wait)" ] && [ "$(LC_ALL=C type -t travis_wait)" = function ]
-then
-  travis_wait 30 gcloud builds submit --config cloudbuild.yaml
-else
-  gcloud builds submit --config cloudbuild.yaml
-fi
+gcloud builds submit --config cloudbuild.yaml
 
 GOOGLE_ENV_VARS="
 GCR_TOKEN=${GCR_TOKEN},\
