@@ -1,4 +1,4 @@
-future::plan(future::multiprocess)
+future::plan(future::multicore)
 
 EARLIEST_VALID_SEASON = 2004
 
