@@ -8,7 +8,8 @@ a given round from afl.com.au, cleans it, and returns it as a dataframe.}
 fetch_rosters(round_number)
 }
 \arguments{
-\item{round_number}{Fetch the rosters from this round. Serves as a check to make sure available roster data matches the requested round.}
+\item{round_number}{Fetch the rosters from this round. Required,
+because it is assigned to the round_number column of the returned data set.}
 }
 \description{
 Scrapes team roster data (i.e. which players are playing for each team) for
