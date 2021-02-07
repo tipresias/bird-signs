@@ -12,27 +12,34 @@ PLAYER_COL_NAMES <- c(
 HOME_AWAY <- c("home", "away")
 
 
+#' @importFrom rlang .data
 .clean_data_frame <- function(roster_df) {
   roster_df %>%
-    dplyr::mutate_all(., as.character) %>%
+    dplyr::mutate_all(as.character) %>%
     dplyr::mutate(
-      .,
-      player_name = stringr::str_extract(player_name, "[:alpha:]+(?:[:blank:][:alpha:]+)+"),
-      round_number = as.numeric(round_number),
-      season = lubridate::now() %>% lubridate::year(.)
+      player_name = stringr::str_extract(.data$player_name, "[:alpha:]+(?:[:blank:][:alpha:]+)+"),
+      round_number = as.numeric(.data$round_number),
+      season = lubridate::now() %>% lubridate::year()
     )
 }
 
 
+.extract_number_from_round_label <- function(label) {
+  stringr::str_match(label, "Round (\\d+)") %>%
+    magrittr::extract2(2) %>%
+    as.numeric()
+}
+
+#' @importFrom rlang .data
 .get_round_number <- function(roster_page) {
   round_label <- roster_page %>%
     rvest::html_node("h1.centertitle") %>%
     rvest::html_text()
 
   round_number <- round_label %>%
-    stringr::str_match(., "Round (\\d+)") %>%
-    .[[2]] %>%
-    as.numeric(.)
+    stringr::str_match("Round (\\d+)") %>%
+    magrittr::extract2(2) %>%
+    as.numeric()
 
   if (is.na(round_number)) {
     return(NULL)
@@ -41,43 +48,47 @@ HOME_AWAY <- c("home", "away")
   max_regular_round <- xml2::read_html(FIXTURE_URL) %>%
     rvest::html_nodes(".tbtitle") %>%
     rvest::html_text() %>%
-    purrr::map(~ stringr::str_match(.x, "Round (\\d+)") %>% .[[2]] %>% as.numeric) %>%
+    purrr::map(.extract_number_from_round_label) %>%
     unlist() %>%
-    max(., na.rm = TRUE)
+    max(na.rm = TRUE)
 
   finals_week <- round_label %>%
     stringr::str_match("Finals Week (\\d+)") %>%
-    .[[2]] %>%
+    magrittr::extract2(2) %>%
     as.numeric()
 
   max_regular_round + finals_week
 }
 
 
+#' @importFrom rlang .data
 .pivot_data_frame <- function(matches) {
   matches %>%
   tidyr::pivot_wider(
-    .,
-    id_cols = c(player_name, playing_for, match_id),
-    names_from = team_type,
-    values_from = team
+    id_cols = c(.data$player_name, .data$playing_for, .data$match_id),
+    names_from = .data$team_type,
+    values_from = .data$team
   ) %>%
-  tidyr::fill(., tidyselect::all_of(HOME_AWAY), .direction = "downup") %>%
-  dplyr::rename(., home_team = home, away_team = away)
+  tidyr::fill(tidyselect::all_of(HOME_AWAY), .direction = "downup") %>%
+  dplyr::rename(home_team = .data$home, away_team = .data$away)
 }
 
+.extract_href <- function(link_element) {
+  BASE_FOOTYWIRE_URL <- "https://www.footywire.com/afl/footy/"
+  # They use relative hrefs, so we have to add the domain manually
+  paste0(BASE_FOOTYWIRE_URL, rvest::html_attr(link_element, "href"))
+}
 
 .fetch_player_name <- function(link_element) {
-  BASE_FOOTYWIRE_URL <- "https://www.footywire.com/afl/footy/"
   link_element %>%
-    rvest::html_attr(., "href") %>%
-    paste0(BASE_FOOTYWIRE_URL, .) %>%
-    xml2::read_html(.) %>%
-    rvest::html_node(., "#playerProfileName") %>%
-    rvest::html_text(.)
+    .extract_href() %>%
+    xml2::read_html() %>%
+    rvest::html_node("#playerProfileName") %>%
+    rvest::html_text()
 }
 
 
+#' @importFrom rlang .data
 .parse_team_data <- function(match_tables) {
   function(team_name, index) {
     ROSTER_TABLE_INDEX <- 2
@@ -89,21 +100,21 @@ HOME_AWAY <- c("home", "away")
     row_modulo_remainder <- if (team_type == "home") 1 else 0
 
     interchange_players <- match_tables[[interchange_index]] %>%
-      rvest::html_nodes(., "a") %>%
+      rvest::html_nodes("a") %>%
       # Only first four players listed are for interchange;
       # others are emergencies, ins, or outs.
       .[1:4] %>%
-      purrr::map(., .fetch_player_name) %>%
-      unlist(.)
+      purrr::map(.fetch_player_name) %>%
+      unlist()
 
     roster_players <- match_tables[[ROSTER_TABLE_INDEX]] %>%
       rvest::html_nodes("tr") %>%
       purrr::imap(
         ~ if (.y %% 2 == row_modulo_remainder) rvest::html_nodes(.x, "a") else NULL
       ) %>%
-      unlist(., recursive = FALSE) %>%
-      purrr::map(., .fetch_player_name) %>%
-      unlist(.)
+      unlist(recursive = FALSE) %>%
+      purrr::map(.fetch_player_name) %>%
+      unlist()
 
     team_roster <- c(roster_players, interchange_players)
 
@@ -111,7 +122,7 @@ HOME_AWAY <- c("home", "away")
       dplyr::mutate(
         playing_for = team_name,
         team_type = team_type,
-        team = playing_for
+        team = team_name
       )
   }
 }
@@ -123,27 +134,29 @@ HOME_AWAY <- c("home", "away")
   match_element %>%
       # There are multiple nodes that match this selector, but team names
       # will always be in the first.
-      rvest::html_node(., '.tbtitle') %>%
-      rvest::html_text(.) %>%
-      stringr::str_extract(., UNTIL_VENUE_REGEX) %>%
-      stringr::str_split(., ' v ') %>%
-      unlist(.) %>%
-      stringr::str_trim(.)
+      rvest::html_node('.tbtitle') %>%
+      rvest::html_text() %>%
+      stringr::str_extract(UNTIL_VENUE_REGEX) %>%
+      stringr::str_split(' v ') %>%
+      unlist() %>%
+      stringr::str_trim()
+}
+
+.has_cellpadding_0 <- function(html_node) {
+  # Super janky, but only the table with summary statistics
+  # (and no player names) has cellpadding=0
+  rvest::html_attr(html_node, "cellpadding") %>% as.numeric(.) == 0
 }
 
 .parse_match_element <- function(match_element, index) {
   match_tables <- match_element %>%
     rvest::html_nodes('table') %>%
-    # Super janky, but only the table with summary statistics
-    # (and no player names) has cellpadding=0
-    purrr::discard(
-      ~ rvest::html_attr(., "cellpadding") %>% as.numeric(.) == 0
-    )
+    purrr::discard(.has_cellpadding_0)
 
   match_element %>%
-    .extract_team_names(.) %>%
-    purrr::imap(., .parse_team_data(match_tables)) %>%
-    dplyr::bind_rows(.) %>%
+    .extract_team_names() %>%
+    purrr::imap(.parse_team_data(match_tables)) %>%
+    dplyr::bind_rows() %>%
     dplyr::mutate(match_id = index)
 }
 
@@ -159,6 +172,7 @@ HOME_AWAY <- c("home", "away")
 #' Scrapes team roster data (i.e. which players are playing for each team) for
 #' a given round from afl.com.au, cleans it, and returns it as a dataframe.
 #' @importFrom magrittr %>%
+#' @importFrom rlang .data
 #' @param round_number Fetch the rosters from this round. Required,
 #'  because it is assigned to the round_number column of the returned data set.
 #' @export
@@ -186,20 +200,20 @@ fetch_rosters <- function(round_number) {
   }
 
 
-  fixture <- fitzRoy::get_fixture() %>%
+  fixture <- fitzRoy::fetch_fixture_footywire() %>%
     dplyr::select(c('Date', 'Home.Team', 'Away.Team', 'Round')) %>%
     dplyr::rename(
-      date = Date,
-      home_team = Home.Team,
-      away_team = Away.Team,
-      round_number = Round
+      date = .data$Date,
+      home_team = .data$Home.Team,
+      away_team = .data$Away.Team,
+      round_number = .data$Round
     )
 
   rosters <- .collect_match_elements(roster_page) %>%
     purrr::imap(.parse_match_element) %>%
-    dplyr::bind_rows(.) %>%
-    .pivot_data_frame(.) %>%
-    dplyr::mutate(., round_number = roster_round_number) %>%
-    .clean_data_frame(.) %>%
+    dplyr::bind_rows() %>%
+    .pivot_data_frame() %>%
+    dplyr::mutate(round_number = roster_round_number) %>%
+    .clean_data_frame() %>%
     dplyr::inner_join(fixture, by = c('round_number', 'home_team', 'away_team'))
 }

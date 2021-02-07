@@ -38,58 +38,64 @@ function() {
 
 #' Return data for completed matches.
 #' @importFrom magrittr %>%
+#' @importFrom rlang .data
 #' @param start_date Minimum match date for fetched data
 #' @param end_date Maximum match date for fetched data
 #' @get /matches
 function(start_date = FIRST_AFL_SEASON, end_date = Sys.Date()) {
   fetch_matches(start_date, end_date) %>%
-    list(data = .)
+    list(data = .data)
 }
 
 #' Return match results data without in-game stats. Current season only
 #' (for earlier seasons use the /matches endpoint).
 #' @importFrom magrittr %>%
+#' @importFrom rlang .data
 #' @param round_number Fetch matches from the given round
 #' @get /match_results
 function(round_number = NULL) {
-  fetch_match_results(round_number) %>% list(data = .)
+  fetch_match_results(round_number) %>% list(data = .data)
 }
 
 #' Return player data
 #' @importFrom magrittr %>%
+#' @importFrom rlang .data
 #' @param start_date Minimum match date for fetched data
 #' @param end_date Maximum match date for fetched data
 #' @get /players
 function(start_date = FIRST_AFL_SEASON, end_date = Sys.Date()) {
   fetch_player_results(start_date, end_date) %>%
-    list(data = .)
+    list(data = .data)
 }
 
 #' Return betting data along with some basic match data
 #' @importFrom magrittr %>%
+#' @importFrom rlang .data
 #' @param start_date Minimum match date for fetched data
 #' @param end_date Maximum match date for fetched data
 #' @get /betting_odds
 function(start_date = FIRST_AFL_SEASON, end_date = Sys.Date()) {
-  fetch_betting_odds(start_date, end_date) %>% list(data = .)
+  fetch_betting_odds(start_date, end_date) %>% list(data = .data)
 }
 
 #' Return fixture data (match data without results)
 #' @importFrom magrittr %>%
+#' @importFrom rlang .data
 #' @param start_date Minimum match date for fetched data
 #' @param end_date Maximum match date for fetched data
 #' @get /fixtures
 function(start_date = FIRST_AFL_SEASON, end_date = END_OF_YEAR) {
   fetch_fixtures(start_date, end_date) %>%
-    list(data = .)
+    list(data = .data)
 }
 
 #' Return team rosters for the current round.
 #' @importFrom magrittr %>%
+#' @importFrom rlang .data
 #' @param round_number Fetch the rosters from this round. Serves as a check
 #'  to make sure available roster data matches the requested round.
 #'  Leave blank to accept whatever the current round is.
 #' @get /rosters
 function(round_number = NULL) {
-  fetch_rosters(round_number) %>% list(data = .)
+  fetch_rosters(round_number) %>% list(data = .data)
 }
