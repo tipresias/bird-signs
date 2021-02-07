@@ -1,3 +1,5 @@
+source(here::here("R", "helpers.R"))
+
 future::plan(future::multicore)
 
 EARLIEST_VALID_SEASON = 2004
@@ -25,8 +27,13 @@ EARLIEST_VALID_SEASON = 2004
     )
 }
 
+.async_fetch_season_fixture <- function(season) {
+  future::future({ .fetch_season_fixture(season) })
+}
+
 #' Fetches fixture data via the fitzRoy package and filters by date range.
 #' @importFrom magrittr %>%
+#' @importFrom rlang .data
 #' @param start_date Minimum match date for fetched data
 #' @param end_date Maximum match date for fetched data
 #' @export
@@ -54,9 +61,7 @@ fetch_fixtures <- function(start_date, end_date) {
   }
 
   fixtures %>%
-    dplyr::bind_rows(.) %>%
-    dplyr::filter(., Date >= start_date & Date <= end_date) %>%
-    dplyr::rename_all(
-      ~ stringr::str_to_lower(.) %>% stringr::str_replace_all(., "\\.", "_")
-    )
+    dplyr::bind_rows() %>%
+    dplyr::filter(.data$Date >= start_date & .data$Date <= end_date) %>%
+    dplyr::rename_all(convert_to_snake_case)
 }

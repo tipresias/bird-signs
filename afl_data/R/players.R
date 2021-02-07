@@ -32,6 +32,7 @@ future::plan(future::multicore)
 
 #' Fetches player data via the fitzRoy package and filters by date range.
 #' @importFrom magrittr %>%
+#' @importFrom rlang .data
 #' @param start_date Minimum match date for fetched data
 #' @param end_date Maximum match date for fetched data
 #' @export
@@ -51,5 +52,5 @@ fetch_player_results <- function(start_date, end_date) {
   player_results %>%
     dplyr::bind_rows() %>%
     dplyr::filter(.data$Date >= start_date & .data$Date <= end_date) %>%
-    dplyr::rename_all(~ stringr::str_to_lower(.) %>% stringr::str_replace_all(., "\\.", "_"))
+    dplyr::rename_all(convert_to_snake_case)
 }
