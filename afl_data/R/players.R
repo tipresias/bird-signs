@@ -1,52 +1,55 @@
+source(here::here("R", "helpers.R"))
+
+future::plan(future::multicore)
+
+.fetch_season_player_results <- function(season) {
+  tryCatch(
+    {
+      fitzRoy::fetch_player_stats_afltables(season)
+    },
+    error = function(err) {
+      this_year <- lubridate::year(lubridate::today())
+
+      if (season > this_year) {
+        warning(
+          paste0(
+            "Skipping season ",
+            season,
+            ", because it does not have a player data yet"
+          )
+        )
+        return(NULL)
+      }
+
+      stop(err)
+    }
+  )
+}
+
+.async_fetch_season_player_results <- function(season) {
+  future::future({ .fetch_season_player_results(season) }, seed = TRUE)
+}
+
 #' Fetches player data via the fitzRoy package and filters by date range.
 #' @importFrom magrittr %>%
 #' @param start_date Minimum match date for fetched data
 #' @param end_date Maximum match date for fetched data
 #' @export
 fetch_player_results <- function(start_date, end_date) {
-  this_year <- Sys.Date() %>% substring(0, 4) %>% as.integer()
+  start_season = lubridate::year(start_date)
+  end_season = lubridate::year(end_date)
 
+  player_results <- start_season:end_season %>%
+    purrr::map(.async_fetch_season_player_results) %>%
+    future::value() %>%
+    purrr::compact()
 
-  retry_with_last_year_end_date <- function(start_date, end_date) {
-    end_date_last_year <- paste0(this_year - 1, "-12-31")
-
-    warning(
-      paste0(
-        "end_date of ", end_date, " is in a year for which AFLTables has no ",
-        "data. Retrying with an end_date of the end of last year: ",
-        end_date_last_year
-      )
-    )
-
-    fitzRoy::get_afltables_stats(
-      start_date = start_date,
-      end_date = end_date_last_year
-    )
+  if (length(player_results) == 0) {
+    return(list())
   }
 
-
-  handle_players_route_error <- function(start_date, end_date) {
-    end_date_year <- end_date %>% substring(0, 4) %>% as.integer()
-
-    function(err) {
-      if (end_date_year > this_year) {
-        retry_with_last_year_end_date(start_date, end_date)
-      } else {
-        stop(err)
-      }
-    }
-  }
-
-
-  data <- tryCatch({
-      fitzRoy::get_afltables_stats(start_date = start_date, end_date = end_date)
-    },
-    error = handle_players_route_error(start_date, end_date)
-  )
-
-  return(
-    data %>%
-      dplyr::filter(., Date >= start_date & Date <= end_date) %>%
-      dplyr::rename_all(~ stringr::str_to_lower(.) %>% stringr::str_replace_all(., "\\.", "_"))
-  )
+  player_results %>%
+    dplyr::bind_rows() %>%
+    dplyr::filter(.data$Date >= start_date & .data$Date <= end_date) %>%
+    dplyr::rename_all(~ stringr::str_to_lower(.) %>% stringr::str_replace_all(., "\\.", "_"))
 }

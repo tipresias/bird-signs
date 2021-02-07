@@ -4,7 +4,7 @@ EARLIEST_VALID_SEASON = 2004
 
 .fetch_season_fixture <- function(season) {
   tryCatch({
-        fitzRoy::get_fixture(season)
+        fitzRoy::fetch_fixture_footywire(season)
       },
       error = function(err) {
         # fitzRoy returns 404 response errors if we try to fetch
@@ -45,9 +45,9 @@ fetch_fixtures <- function(start_date, end_date) {
   }
 
   fixtures <- max(first_season, EARLIEST_VALID_SEASON):last_season %>%
-    purrr::map(~ future::future({ .fetch_season_fixture(.) })) %>%
-    future::values(.) %>%
-    purrr::compact(.)
+    purrr::map(.async_fetch_season_fixture) %>%
+    future::value() %>%
+    purrr::compact()
 
   if (length(fixtures) == 0) {
     return(list())

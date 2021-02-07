@@ -4,7 +4,7 @@
 #' @param end_date Maximum match date for fetched data
 #' @export
 fetch_betting_odds <- function(start_date, end_date) {
-  fitzRoy::get_footywire_betting_odds(
+  fitzRoy::fetch_betting_odds_footywire(
     start_season = lubridate::year(start_date),
     end_season = lubridate::year(end_date)
   ) %>%

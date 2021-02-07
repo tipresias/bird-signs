@@ -186,7 +186,7 @@ fetch_rosters <- function(round_number) {
   }
 
 
-  fixture <- fitzRoy::get_fixture() %>%
+  fixture <- fitzRoy::fetch_fixture_footywire() %>%
     dplyr::select(c('Date', 'Home.Team', 'Away.Team', 'Round')) %>%
     dplyr::rename(
       date = Date,
