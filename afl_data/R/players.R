@@ -43,7 +43,8 @@ fetch_player_results <- function(start_date, end_date) {
   player_results <- start_season:end_season %>%
     purrr::map(.async_fetch_season_player_results) %>%
     future::value() %>%
-    purrr::compact()
+    purrr::compact() %>%
+    purrr::discard(is_empty)
 
   if (length(player_results) == 0) {
     return(list())

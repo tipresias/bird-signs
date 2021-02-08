@@ -28,7 +28,7 @@ EARLIEST_VALID_SEASON = 2004
 }
 
 .async_fetch_season_fixture <- function(season) {
-  future::future({ .fetch_season_fixture(season) })
+  future::future({ .fetch_season_fixture(season) }, seed = TRUE)
 }
 
 #' Fetches fixture data via the fitzRoy package and filters by date range.
@@ -54,7 +54,8 @@ fetch_fixtures <- function(start_date, end_date) {
   fixtures <- max(first_season, EARLIEST_VALID_SEASON):last_season %>%
     purrr::map(.async_fetch_season_fixture) %>%
     future::value() %>%
-    purrr::compact()
+    purrr::compact() %>%
+    purrr::discard(is_empty)
 
   if (length(fixtures) == 0) {
     return(list())

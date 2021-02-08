@@ -7,7 +7,7 @@ future::plan(future::multicore)
 }
 
 .async_fetch_season_match_results <- function(season) {
-  future::future({ .fetch_season_match_results(season) })
+  future::future({ .fetch_season_match_results(season) }, seed = TRUE)
 }
 
 #' Fetches match data via the fitzRoy package and filters by date range.
@@ -20,9 +20,16 @@ fetch_matches <- function(start_date, end_date) {
   start_season <- lubridate::year(start_date)
   end_season <- lubridate::year(end_date)
 
-  start_season:end_season %>%
+  matches <- start_season:end_season %>%
     purrr::map(.async_fetch_season_match_results) %>%
     future::value() %>%
+    purrr::discard(is_empty)
+
+  if (length(matches) == 0) {
+    return(matches)
+  }
+
+  matches %>%
     dplyr::bind_rows() %>%
     dplyr::filter(.data$Date >= start_date & .data$Date <= end_date) %>%
     dplyr::rename_all(convert_to_snake_case)
