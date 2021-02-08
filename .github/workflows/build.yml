@@ -30,7 +30,7 @@ jobs:
       - name: Push updated images
         if: ${{ github.ref == 'refs/heads/main' }}
         run: |
-          docker push cfranklin11/tipresias_data_science:latest
+          docker push cfranklin11/tipresias_afl_data:latest
       - name: Set up Google Cloud SDK
         uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
