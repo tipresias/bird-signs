@@ -54,7 +54,8 @@ fetch_fixtures <- function(start_date, end_date) {
   fixtures <- max(first_season, EARLIEST_VALID_SEASON):last_season %>%
     purrr::map(.async_fetch_season_fixture) %>%
     future::value() %>%
-    purrr::compact()
+    purrr::compact() %>%
+    purrr::discard(is_empty)
 
   if (length(fixtures) == 0) {
     return(list())
