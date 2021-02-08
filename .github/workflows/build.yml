@@ -40,4 +40,5 @@ jobs:
         if: ${{ github.ref == 'refs/heads/main' }}
         env:
           GCR_TOKEN: ${{ secrets.GCR_TOKEN }}
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
         run: ./scripts/deploy.sh
