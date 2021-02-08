@@ -28,7 +28,7 @@ EARLIEST_VALID_SEASON = 2004
 }
 
 .async_fetch_season_fixture <- function(season) {
-  future::future({ .fetch_season_fixture(season) })
+  future::future({ .fetch_season_fixture(season) }, seed = TRUE)
 }
 
 #' Fetches fixture data via the fitzRoy package and filters by date range.

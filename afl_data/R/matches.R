@@ -7,7 +7,7 @@ future::plan(future::multicore)
 }
 
 .async_fetch_season_match_results <- function(season) {
-  future::future({ .fetch_season_match_results(season) })
+  future::future({ .fetch_season_match_results(season) }, seed = TRUE)
 }
 
 #' Fetches match data via the fitzRoy package and filters by date range.
