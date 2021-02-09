@@ -37,14 +37,13 @@ fetch_matches <- function(start_date, end_date) {
 
 #' Fetch match results data from the Squiggle API.
 #' @importFrom magrittr %>%
-#' @importFrom rlang .data
 #' @param round_number Fetch matches from the given round
 #' @export
 fetch_match_results <- function(round_number) {
   squiggle_api <- "https://api.squiggle.com.au"
-  year <- lubridate::now() %>% lubridate::year(.data)
+  year <- lubridate::now() %>% lubridate::year()
   round_param <- ifelse(is.null(round_number), "", paste0(";round=", round_number))
   url <- paste0(squiggle_api, "/?q=games;year=", year, round_param)
 
-  RCurl::getURL(url) %>% jsonlite::fromJSON() %>% .data$games
+  RCurl::getURL(url) %>% jsonlite::fromJSON() %>% magrittr::use_series(games)
 }

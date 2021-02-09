@@ -24,3 +24,12 @@ describe("fetch_matches()", {
     })
   })
 })
+
+describe("fetch_match_results()", {
+  data <- fetch_match_results(NULL)
+
+  it("returns a list of match results", {
+    expect_true("data.frame" %in% class(data))
+    expect_gt(nrow(data), 0)
+  })
+})
