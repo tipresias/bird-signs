@@ -13,7 +13,11 @@ install.packages(
 
 # Installing via git rather than github to avoid unauthenticated API
 # rate limits in CI
-devtools::install_git("git://github.com/jimmyday12/fitzRoy.git", quiet = TRUE)
+devtools::install_git(
+  "git://github.com/jimmyday12/fitzRoy.git",
+  branch = 'main',
+  quiet = TRUE
+)
 
 # Dev environment packages
 install.packages(c("roxygen2", "testthat"), quiet = TRUE, verbose = FALSE)
