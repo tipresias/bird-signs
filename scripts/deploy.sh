@@ -2,9 +2,6 @@
 
 set -euo pipefail
 
-DOCKER_COMPOSE_FILE=/var/www/bird_signs/docker-compose.yml
-PORT=8080
-
 gcloud builds submit --config cloudbuild.yaml
 
 GOOGLE_ENV_VARS="

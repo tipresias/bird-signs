@@ -13,7 +13,7 @@ jobs:
           docker pull cfranklin11/tipresias_afl_data:latest
           docker build --cache-from cfranklin11/tipresias_afl_data:latest \
             -t cfranklin11/tipresias_afl_data:latest \
-            -f ./ci.Dockerfile .
+            -f ./Dockerfile .
       - name: Run check/tests
         if: ${{ always() }}
         run: |
