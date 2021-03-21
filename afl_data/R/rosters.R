@@ -41,7 +41,16 @@ HOME_AWAY <- c("home", "away")
     magrittr::extract2(2) %>%
     as.numeric()
 
-  if (is.na(round_number)) {
+  if (!is.na(round_number)) {
+    return(round_number)
+  }
+
+  finals_week <- round_label %>%
+    stringr::str_match("Finals Week (\\d+)") %>%
+    magrittr::extract2(2) %>%
+    as.numeric()
+
+  if (is.na(finals_week)) {
     return(NULL)
   }
 
@@ -51,11 +60,6 @@ HOME_AWAY <- c("home", "away")
     purrr::map(.extract_number_from_round_label) %>%
     unlist() %>%
     max(na.rm = TRUE)
-
-  finals_week <- round_label %>%
-    stringr::str_match("Finals Week (\\d+)") %>%
-    magrittr::extract2(2) %>%
-    as.numeric()
 
   max_regular_round + finals_week
 }
@@ -182,11 +186,11 @@ fetch_rosters <- function(round_number) {
 
   # If we have mismatched round numbers, it means that the roster page
   # hasn't been updated for the upcoming round yet.
-  round_numbers_match <- is.null(round_number) ||
+  round_numbers_match <- is.null(round_number) || is.na(round_number) ||
     # If roster_round_number is NULL, it means that the page is using
     # some finals round label that we can't parse for a round number,
     # so we just shrug and hope it's been updated for the current round.
-    is.null(page_round_number) ||
+    is.null(page_round_number) || is.na(page_round_number) ||
     page_round_number == as.numeric(round_number)
 
   roster_round_number <- if (is.null(page_round_number)) {
