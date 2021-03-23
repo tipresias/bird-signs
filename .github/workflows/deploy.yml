@@ -1,4 +1,4 @@
-name: manual_deploy
+name: deploy_new_fitzroy
 
 on: workflow_dispatch
 
@@ -9,9 +9,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Build image
+        # We don't build from cache, because this job is for installing
+        # an updated version of the fitzRoy package from 'main',
+        # which usually doesn't involve cache-busting changes to our
+        # image.
         run: |
-          docker pull cfranklin11/tipresias_afl_data:latest
-          docker build --cache-from cfranklin11/tipresias_afl_data:latest \
+          docker build \
             -t cfranklin11/tipresias_afl_data:latest \
             -f ./Dockerfile .
       - name: Login to Docker Hub
