@@ -6,7 +6,7 @@ EARLIEST_VALID_SEASON = 2004
 
 .fetch_season_fixture <- function(season) {
   tryCatch({
-        fitzRoy::fetch_fixture_footywire(season)
+        fitzRoy::fetch_fixture_squiggle(season)
       },
       error = function(err) {
         # fitzRoy returns 404 response errors if we try to fetch
@@ -63,6 +63,15 @@ fetch_fixtures <- function(start_date, end_date) {
 
   fixtures %>%
     dplyr::bind_rows() %>%
+    dplyr::select(
+      Date = .data$localtime,
+      Season = .data$year,
+      Season.Game = .data$id,
+      Round = .data$round,
+      Home.Team = .data$hteam,
+      Away.Team = .data$ateam,
+      Venue = .data$venue,
+    ) %>%
     dplyr::filter(.data$Date >= start_date & .data$Date <= end_date) %>%
     dplyr::rename_all(convert_to_snake_case)
 }

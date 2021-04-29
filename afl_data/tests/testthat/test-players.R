@@ -1,3 +1,6 @@
+month_from_now <- '2021-04-23'
+skip_if(lubridate::today() < month_from_now)
+
 describe("fetch_player_results()", {
   today <- lubridate::today()
 
